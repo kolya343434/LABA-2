@@ -44,10 +44,7 @@
     <ClInclude Include="LinkedList.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Sort.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ISorted.h">
+    <ClInclude Include="ISorter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Work_With_Files.h">

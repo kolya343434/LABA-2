@@ -1,6 +1,7 @@
 #pragma once
 
 namespace TEST_DYNAMIC_ARRAY {
+
 	void ConstructorTests();
 	void CopyConstructorTests();
 

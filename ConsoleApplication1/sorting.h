@@ -1,93 +1,84 @@
-#pragma once
+п»ї#pragma once
 
-#include "ISorted.h"
-#include "LinkedList.h"
-
+#include "ISorter.h"
+//#include "LinkedList.h"
+#include "Sequence.h"
+#include <iostream>
 
 template <typename T>
-class InsertionSort : public ISorter<T>
-{
+class InsertionSort : public ISorter<T> {
 public:
-    void Sort(Sequence<T>* sequence) override
-    {
-        if (sequence == nullptr) return; // Проверка на nullptr
-        int len = sequence->GetLength(); // Используем -> для вызова метода через указатель
-        if (len <= 1) return; // Проверка для пустого списка или списка одного элемента
+    void Sort(Sequence<T>& sequence, bool (*precedes)(const T& first, const T& second)) override {
+        int len = sequence.GetLength(); // РџРѕР»СѓС‡Р°РµРј РґР»РёРЅСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+        if (len <= 1) return;           // РџСЂРѕРІРµСЂРєР° РґР»СЏ РїСѓСЃС‚РѕР№ РёР»Рё РєРѕСЂРѕС‚РєРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 
         for (int i = 1; i < len; i++) {
-            T key = sequence->GetElement(i);
+            T key = sequence.GetElement(i);    // РР·РІР»РµРєР°РµРј С‚РµРєСѓС‰РёР№ СЌР»РµРјРµРЅС‚
             int j = i - 1;
 
-            // Переместить элементы больше ключа на одну позицию вперед
-            while (j >= 0 && sequence->GetElement(j) > key) {
-                sequence->Set(j + 1, sequence->GetElement(j)); // Переместить элемент
+            // РџРµСЂРµРјРµС‰Р°РµРј СЌР»РµРјРµРЅС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°СЂСѓС€Р°СЋС‚ РїРѕСЂСЏРґРѕРє, Р·Р°РґР°РЅРЅС‹Р№ РєРѕРјРїР°СЂР°С‚РѕСЂРѕРј
+            while (j >= 0 && !precedes(sequence.GetElement(j), key)) {
+                sequence.Set(j + 1, sequence.GetElement(j)); // РЎРґРІРёРіР°РµРј СЌР»РµРјРµРЅС‚ РІРїСЂР°РІРѕ
                 j--;
             }
-            sequence->Set(j + 1, key); // Вставить ключ в правильное положение
+            sequence.Set(j + 1, key); // Р’СЃС‚Р°РІР»СЏРµРј РєР»СЋС‡ РЅР° РїСЂР°РІРёР»СЊРЅРѕРµ РјРµСЃС‚Рѕ
         }
     }
 };
 
 
-template <typename T>
-class BubbleSorter : public ISorter<T>
-{
-public:
-    void Sort(Sequence<T>* sequence) override
-    {
-        if (sequence == nullptr) return; // Проверка на nullptr
-        int len = sequence->GetLength(); // Используем оператор -> для указателя
-        if (len <= 1) return; // Проверка для пустого списка или списка с одним элементом
 
-        bool swapped;
-        do {
-            swapped = false;
-            for (int i = 0; i < len - 1; i++) {
-                // Сравнение и обмен при необходимости
-                if (sequence->GetElement(i) > sequence->GetElement(i + 1)) {
-                    sequence->Swap(sequence->GetElement(i), sequence->GetElement(i + 1));
-                    swapped = true; // Указываем, что произошел обмен
+template <class T>
+class BubbleSorter : public ISorter<T> {
+public:
+    void Sort(Sequence<T>& sequence, bool (*precedes)(const T& first, const T& second)) override {
+        int n = sequence.GetLength(); // РџРѕР»СѓС‡Р°РµРј РґР»РёРЅСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (!precedes(sequence.GetElement(j), sequence.GetElement(j + 1))) {
+                    // Р•СЃР»Рё РїРѕСЂСЏРґРѕРє РЅР°СЂСѓС€РµРЅ, РјРµРЅСЏРµРј СЌР»РµРјРµРЅС‚С‹ РјРµСЃС‚Р°РјРё
+                    T temp = sequence.GetElement(j);
+                    sequence.Set(j, sequence.GetElement(j + 1));
+                    sequence.Set(j + 1, temp);
                 }
             }
-        } while (swapped); // Повторяем, пока происходят замены
+        }
     }
 };
 
-
 template <typename T>
-class QuickSort : public ISorter<T>
-{
+class QuickSort : public ISorter<T> {
 public:
-    void Sort(Sequence<T>* sequence) override
-    {
-        if (sequence == nullptr || sequence->GetLength() == 0) {
-            return; // Проверка на nullptr и пустую последовательность
+    void Sort(Sequence<T>& sequence, bool (*precedes)(const T& first, const T& second)) override {
+        if (sequence.GetLength() <= 1) {
+            return; // РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј РґР»СЏ РїСѓСЃС‚РѕР№ РёР»Рё СЃР»РёС€РєРѕРј РєРѕСЂРѕС‚РєРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
         }
-        QuickSorter(sequence, 0, sequence->GetLength() - 1);
+
+        // Р’С‹Р·РѕРІ СЂРµРєСѓСЂСЃРёРІРЅРѕРіРѕ Р±С‹СЃС‚СЂРѕРіРѕ СЃРѕСЂС‚РёСЂРѕРІРєРё
+        QuickSortRecursive(sequence, 0, sequence.GetLength() - 1, precedes);
     }
 
 private:
-    void QuickSorter(Sequence<T>* sequence, int start, int end)
-    {
-        if (start >= end) {
-            return;
-        }
-        int pivot = partition(sequence, start, end);
-        QuickSorter(sequence, start, pivot - 1);
-        QuickSorter(sequence, pivot + 1, end);
+    void QuickSortRecursive(Sequence<T>& sequence, int start, int end, bool (*precedes)(const T& first, const T& second)) {
+        if (start >= end) return;
+
+        // Р Р°Р·РґРµР»РµРЅРёРµ Рё СЂРµРєСѓСЂСЃРёРІРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР°
+        int pivotIndex = Partition(sequence, start, end, precedes);
+        QuickSortRecursive(sequence, start, pivotIndex - 1, precedes);
+        QuickSortRecursive(sequence, pivotIndex + 1, end, precedes);
     }
 
-    int partition(Sequence<T>* sequence, int start, int end)
-    {
-        T pivot = sequence->GetElement(end);
-        int pIndex = start;
+    int Partition(Sequence<T>& sequence, int start, int end, bool (*precedes)(const T& first, const T& second)) {
+        T pivot = sequence.GetElement(end); // РСЃРїРѕР»СЊР·СѓРµРј Get, РїСЂРµРґРїРѕР»Р°РіР°СЏ, С‡С‚Рѕ СЌС‚Рѕ РјРµС‚РѕРґ РґРѕСЃС‚СѓРїР°
+        int partitionIndex = start;
+
         for (int i = start; i < end; i++) {
-            if (sequence->GetElement(i) <= pivot) { // Сравнение по возрастанию
-                sequence->Swap(sequence->GetElement(i), sequence->GetElement(pIndex));
-                pIndex++;
+            if (precedes(sequence.GetElement(i), pivot)) {
+                sequence.Swap(sequence.GetElement(i), sequence.GetElement(partitionIndex) ); // Swap СЂР°Р±РѕС‚Р°РµС‚ СЃ РёРЅРґРµРєСЃР°РјРё
+                partitionIndex++;
             }
         }
-        sequence->Swap(sequence->GetElement(pIndex), sequence->GetElement(end));
-        return pIndex;
+        sequence.Swap(sequence.GetElement(partitionIndex), sequence.GetElement(end));
+        return partitionIndex;
     }
 };

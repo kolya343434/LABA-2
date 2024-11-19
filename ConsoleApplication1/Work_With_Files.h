@@ -1,8 +1,5 @@
 #pragma once
 
-/// sequence add to readdata
-// размер одного элемента в файле 300 байт
-
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -10,39 +7,7 @@
 
 void WriteRandomNumbersToFile(unsigned long long quantity, const std::string& outputFileName);
 
-template <typename T>
-void ReadData(const std::string& fileName, LinkedList<T>& list) {
-    std::ifstream inFile(fileName); // Создаем объект для чтения из файла
-    if (!inFile) {
-        std::cerr << "Error opening the file: " << fileName << std::endl;
-        return; // Если файл не открылся, выходим из функции
-    }
 
-    T value;
-    // Читаем данные из файла
-    while (inFile >> value) {
-        list.Append(value); // Добавляем каждое считанное значение в список
-    }
-
-    inFile.close(); // Закрываем файл
-}
-
-template <typename T>
-void ReadData(const std::string& fileName, DynamicArray<T>& array) {
-    std::ifstream inFile(fileName); // Открываем файл для чтения
-    if (!inFile) {
-        std::cerr << "Error opening the file: " << fileName << std::endl;
-        return; // Если файл не открылся, выходим из функции
-    }
-
-    T value;
-    // Читаем данные из файла
-    while (inFile >> value) {
-        array.Append(value); // Добавляем каждое считанное значение в массив
-    }
-
-    inFile.close(); // Закрываем файл
-}
 
 template <typename T>
 void ReadNumbersFromFile(const std::string& inputFileName, Sequence<T>& numbers) {
@@ -54,13 +19,10 @@ void ReadNumbersFromFile(const std::string& inputFileName, Sequence<T>& numbers)
     }
 
     std::string line;
-
+   
     // Читаем строки из файла
     while (std::getline(fileStream, line)) {
-        if (line.size() > 300) { // Проверка, не превышает ли строка 300 байт
-            std::cerr << "Error: Line exceeds 300 bytes: " << line << std::endl;
-            continue; // Пропустить строки, превышающие 300 байт
-        }
+       
 
         std::istringstream iss(line);
         T item;
@@ -103,3 +65,6 @@ void WriteSequenceToFile(std::string& fileName, Sequence<T>* numbers)
 }
 
 
+
+/// sequence add to readdata
+// размер одного элемента в файле 300 байт
