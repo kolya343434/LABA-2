@@ -1,13 +1,13 @@
-﻿//#include <fstream>
-#include "Interface.h"
-//#include "LinkedList.h"
-//#include "Work_With_Files.h"
-//#include "sorting.h"
+﻿#include <fstream>
+//#include "Interface.h"
+#include "LinkedList.h"
+#include "Work_With_Files.h"
+#include "sorting.h"
 
-//#include <chrono>
-//#include <iostream>
-//#include <iomanip>
-/*
+#include <chrono>
+#include <iostream>
+#include <iomanip>
+
 template <typename Sorter>
 double loadTestSort(int N, Sorter& sorter) {
     LinkedList<int> List;
@@ -32,7 +32,6 @@ double loadTestSort(int N, Sorter& sorter) {
 
     return duration.count();
 }
-*/
 
 
 
@@ -86,17 +85,83 @@ struct Person {
         }
         return is;
     }
+    // Объявление перегрузки оператора << как дружественной функции
+    
+};
+
+ostream& operator<<(ostream& os, const Person& person) {
+    os <<"\n"
+        << "Person("
+        << person.firstName << " " << person.lastName
+        << ", Birth Year: " << person.birthYear
+        << ", Height: " << fixed << setprecision(2) << person.height << "m"
+        << ", Weight: " << fixed << setprecision(2) << person.weight << "kg"
+        << ", ID: " << person.id << ")";
+    return os;
+}
+*/
+
+struct Person {
+    int id;  // Уникальный идентификатор
+    string lastName;
+    string firstName;
+    int birthYear;
+    double height;
+    double weight;
+
+    // Конструктор по умолчанию
+    Person() : id(0), lastName(""), firstName(""), birthYear(0), height(0.0), weight(0.0) {}
+
+    // Пользовательский конструктор
+    Person(int id, const string& ln, const string& fn, int by, double h, double w)
+        : id(id), lastName(ln), firstName(fn), birthYear(by), height(h), weight(w) {}
+
+    // Перегрузка оператора ввода
+    friend istream& operator>>(istream& is, Person& person) {
+        string line;
+        if (getline(is, line)) {
+            size_t start = line.find('(');
+            size_t end = line.find(')');
+            if (start != string::npos && end != string::npos) {
+                // Извлекаем содержимое внутри скобок
+                string content = line.substr(start + 1, end - start - 1);
+                istringstream iss(content);
+                string fName, lName;
+                char comma; // Для пропуска запятых
+                if (iss >> person.id >> comma // ID
+                    >> quoted(fName)      // First Name (в кавычках)
+                    >> comma
+                    >> quoted(lName)      // Last Name (в кавычках)
+                    >> comma
+                    >> person.birthYear   // Birth Year
+                    >> comma
+                    >> person.height      // Height
+                    >> comma
+                    >> person.weight) {   // Weight
+                    person.firstName = fName;
+                    person.lastName = lName;
+                }
+            }
+        }
+        return is;
+    }
+
+    // Перегрузка оператора вывода
+    friend ostream& operator<<(ostream& os, const Person& person) {
+        os << "\n"
+            <<"Person("
+            << person.id << ", "
+            << "\"" << person.firstName << "\", "
+            << "\"" << person.lastName << "\", "
+            << person.birthYear << ", "
+            << fixed << setprecision(2) << person.height << ", "
+            << fixed << setprecision(2) << person.weight
+            << ")";
+        return os;
+    }
 };
 
 
-ostream& operator<<(ostream& os, const Person& person) {
-    os << "Person(" << person.firstName << " " << person.lastName
-        << ", Birth Year: " << person.birthYear
-        << ", Height: " << person.height << "m"
-        << ", Weight: " << person.weight << "kg"
-        << ", id: " << person.id << ")" << endl;
-    return os;
-}
 
 // Сравнение чисел по возрастанию
 inline bool ascendingInt(const int& first, const int& second) {
@@ -113,7 +178,7 @@ bool CompareByLastName(const Person& a, const Person& b) {
 }
 
 bool CompareById(const Person& a, const Person& b) {
-    return a.id < b.id;
+    return a.id > b.id;
 }
 
 bool CompareByHeight(const Person& a, const Person& b) {
@@ -143,24 +208,27 @@ double loadTestSort(int N, T& sorter, bool (*precedes)(const int& first, const i
 
     return duration.count(); // Возвращаем длительность
 }
-*/
+
+
 
 int main() {
-    //QuickSort<int> sorterr;
-    //cout<<loadTestSort(4000, sorterr, &ascendingInt) << endl;
+    QuickSort<Person> sorterr;
+    //cout<<loadTePersonstSort(4000, sorterr, &ascendingInt) << endl;
 
-    //LinkedList<int> list_int;
-   // ReadNumbersFromFile("opa.txt", list_int);
+    LinkedList<Person> list_int;
+    ReadNumbersFromFile("people.txt", list_int);
     /*
     list_int.Append(Person(1, "Smith", "John", 1990, 1.80, 75.0));
     list_int.Append(Person(2, "Doe", "Jane", 1985, 1.65, 65.0));
     list_int.Append(Person(3, "Brown", "Charlie", 2000, 1.75, 70.0));
     */
-    //list_int.Print();
+    list_int.Print();
 
     
    // QuickSort<int> sorterr;
-   // sorterr.Sort(list_int, ascendingInt);
+    
+   sorterr.Sort(list_int, CompareByHeight);
+   list_int.Print();
         /*
         std::cout << "Сортировка по возрастанию:" << std::endl;
         for (int i = 0; i < list_int.GetLength(); i++) {
@@ -209,8 +277,85 @@ int main() {
   // setlocale(LC_ALL, "Russian");*/
 
 
-   Interface();
+  // Interface();
 
     return 0;
 }
 
+
+
+/*
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include <iomanip> // Для форматирования вывода
+
+// Структура для представления данных о человеке
+struct Person {
+    int id;                 // Идентификатор (от 1 до 100)
+    std::string firstName;  // Имя
+    std::string lastName;   // Фамилия
+    int birthYear;          // Год рождения
+    double height;          // Рост
+    double weight;          // Вес
+
+    // Конструктор для удобства создания объектов
+    Person(int id, const std::string& firstName, const std::string& lastName, int birthYear, double height, double weight)
+        : id(id), firstName(firstName), lastName(lastName), birthYear(birthYear), height(height), weight(weight) {}
+};
+
+// Функция для генерации случайного имени
+std::string generateRandomName(bool isFirstName) {
+    const std::string firstNames[] = { "John", "Alice", "Michael", "Sophia", "James", "Emma" };
+    const std::string lastNames[] = { "Smith", "Johnson", "Brown", "Williams", "Jones", "Davis" };
+    int index = rand() % 6;
+    return isFirstName ? firstNames[index] : lastNames[index];
+}
+
+// Функция для генерации случайного человека
+Person generateRandomPerson(int id) {
+    std::string firstName = generateRandomName(true);
+    std::string lastName = generateRandomName(false);
+    int birthYear = 1950 + rand() % 51;      // Год рождения 1950-2000
+    double height = 1.50 + (rand() % 51) / 100.0; // Рост 1.50-2.00 м
+    double weight = 50.0 + static_cast<double>(rand() % 51) + (rand() % 100) / 100.0; // Вес 50-100 кг с дробной частью
+    return Person(id, firstName, lastName, birthYear, height, weight);
+}
+
+// Функция для записи данных в файл
+void saveToFile(const std::string& filename, const Person& person) {
+    std::ofstream file(filename, std::ios::app); // Открываем файл для добавления
+    if (file.is_open()) {
+        file << "Person("
+            << person.id << ", "
+            << "\"" << person.firstName << "\", "
+            << "\"" << person.lastName << "\", "
+            << person.birthYear << ", "
+            << std::fixed << std::setprecision(5) << person.height << ", "
+            << std::fixed << std::setprecision(2) << person.weight
+            << ");\n";
+        file.close();
+    }
+    else {
+        std::cerr << "Unable to open file for writing\n";
+    }
+}
+
+int main() {
+    srand(static_cast<unsigned int>(time(0))); // Инициализация генератора случайных чисел
+
+    const std::string filename = "people.txt";
+    int numberOfPeople = 100; // Сколько людей сгенерировать
+
+    for (int i = 1; i <= numberOfPeople && i <= 100; ++i) { // ID от 1 до 100
+        Person person = generateRandomPerson(i);
+        saveToFile(filename, person);
+    }
+
+    std::cout << "Generated " << numberOfPeople << " random people and saved to " << filename << "\n";
+
+    return 0;
+}
+*/

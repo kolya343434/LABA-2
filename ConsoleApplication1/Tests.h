@@ -5,7 +5,7 @@
 #include <sstream>  
 #include "LinkedList.h"
 #include <cassert>
-
+ /*
 struct Person {
     int id;  // Уникальный идентификатор
     std::string lastName;
@@ -93,7 +93,10 @@ inline bool ascendingInt(const long long& first, const long long& second) {
     return first < second; // Возвращает true, если первый меньше второго
 }
 
-
+*/
+inline bool ascendingInt(const int& first, const int& second) {
+    return first < second; // Возвращает true, если первый меньше второго
+}
 template<typename T>
 double loadTestSort(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
     LinkedList<int> List;

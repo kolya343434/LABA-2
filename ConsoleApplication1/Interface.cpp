@@ -9,11 +9,11 @@ using namespace std;
 
 
 void Interface() {
-    
+    /*
     int n;
   
     LinkedList<int> tester1;  // Создаем экземпляр связанного списка
-   // DynamicArray<int> tester2; // Создаем экземпляр динамического массива
+    DynamicArray<int> tester2; // Создаем экземпляр динамического массива
 
     checking();
 
@@ -98,7 +98,7 @@ void Interface() {
                     cin >> name;
 
                     WriteRandomNumbersToFile(p, name);
-                    ReadNumbersFromFile(name, tester1);
+                    ReadNumbersFromFile(name, tester2);
 
                     QuickSort<int> sorter;
                     sorter.Sort(tester1, ascendingInt);
@@ -400,7 +400,7 @@ void Interface() {
                     }
                     break; // Добавлено, чтобы выйти из case 2
                 }
-                */
+                
                 
                              if (sele == 2) {
                                  LinkedList<int > list;
@@ -821,4 +821,5 @@ void Interface() {
                         }
      
     }
+    */
 }
