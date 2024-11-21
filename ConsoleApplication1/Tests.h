@@ -1,15 +1,19 @@
 #pragma once
 
 #include <chrono>
-#include <fstream>
-#include <sstream>  
+#include <iomanip>
 #include "LinkedList.h"
 #include <cassert>
- /*
+#include <sstream>
+#include <string>
+
+using namespace std;
+
+
 struct Person {
-    int id;  // Уникальный идентификатор
-    std::string lastName;
-    std::string firstName;
+    int id;
+    string lastName;
+    string firstName;
     int birthYear;
     double height;
     double weight;
@@ -18,92 +22,107 @@ struct Person {
     Person() : id(0), lastName(""), firstName(""), birthYear(0), height(0.0), weight(0.0) {}
 
     // Пользовательский конструктор
-    Person(int id, const std::string& ln, const std::string& fn, int by, double h, double w)
+    Person(int id, const string& ln, const string& fn, int by, double h, double w)
         : id(id), lastName(ln), firstName(fn), birthYear(by), height(h), weight(w) {}
 
     // Перегрузка оператора ввода
-    friend std::istream& operator>>(std::istream& is, Person& person) {
-        std::string line;
-        if (std::getline(is, line)) {
-            std::istringstream iss(line);
-            char ignore;
-            std::string fName, lName;
-            int id, bYear;
-            double h, w;
-
-            // Разбираем строку, предполагая формат: Person(1, "Doe", "John", 1980, 1.75, 70)
-            if (iss >> ignore >> id                           // Пропускаем 'P' и читаем id
-                >> ignore >> ignore >> fName                 // Читаем первое имя в кавычках
-                >> ignore >> lName                           // Читаем второе имя в кавычках
-                >> ignore >> bYear >> ignore                 // Читаем год рождения и запятые
-                >> h >> ignore >> w >> ignore) {             // Читаем рост, вес и закрывающую скобку ')'
-
-                // Убираем кавычки вокруг имен
-                if (!fName.empty() && fName.front() == '"' && fName.back() == '"')
-                    fName = fName.substr(1, fName.size() - 2);
-                if (!lName.empty() && lName.front() == '"' && lName.back() == '"')
-                    lName = lName.substr(1, lName.size() - 2);
-
-                // Присваиваем значения объекту person
-                person.id = id;
-                person.firstName = fName;
-                person.lastName = lName;
-                person.birthYear = bYear;
-                person.height = h;
-                person.weight = w;
+    friend istream& operator>>(istream& is, Person& person) {
+        string line;
+        if (getline(is, line)) {
+            size_t start = line.find('(');
+            size_t end = line.find(')');
+            if (start != string::npos && end != string::npos) {
+                // Извлекаем содержимое внутри скобок
+                string content = line.substr(start + 1, end - start - 1);
+                istringstream iss(content);
+                string fName, lName;
+                char comma; // Для пропуска запятых
+                if (iss >> person.id >> comma // ID
+                    >> quoted(fName)      // First Name (в кавычках)
+                    >> comma
+                    >> quoted(lName)      // Last Name (в кавычках)
+                    >> comma
+                    >> person.birthYear   // Birth Year
+                    >> comma
+                    >> person.height      // Height
+                    >> comma
+                    >> person.weight) {   // Weight
+                    person.firstName = fName;
+                    person.lastName = lName;
+                }
             }
         }
         return is;
     }
-    friend std::ostream& operator<<(std::ostream& os, const Person& person) {
-        os << "ID: " << person.id
-            << ", Name: " << person.firstName << " " << person.lastName
-            << ", Birth Year: " << person.birthYear
-            << ", Height: " << person.height << "m"
-            << ", Weight: " << person.weight << "kg";
+
+    // Перегрузка оператора вывода
+    friend ostream& operator<<(ostream& os, const Person& person) {
+        os << "\n"
+            << "Person("
+            << person.id << ", "
+            << "\"" << person.firstName << "\", "
+            << "\"" << person.lastName << "\", "
+            << person.birthYear << ", "
+            << fixed << setprecision(2) << person.height << ", "
+            << fixed << setprecision(2) << person.weight
+            << ")";
         return os;
     }
 };
 
 
 
-// Сравнение чисел по возрастанию
+
+
 inline bool ascendingInt(const int& first, const int& second) {
-    return first < second; // Возвращает true, если первый меньше второго
+    return first < second;
 }
 
-// Сравнение чисел по убыванию
 inline bool descendingInt(const int& first, const int& second) {
-    return first > second; // Возвращает true, если первый больше второго
+    return first > second;
 }
 
-inline bool CompareByLastNames(const Person& a, const Person& b) {
+inline bool CompareByLastName(const Person& a, const Person& b) {
     return a.lastName < b.lastName;
 }
 
 inline bool CompareById(const Person& a, const Person& b) {
-    return a.id < b.id;
+    return a.id > b.id;
 }
 
 inline bool CompareByHeight(const Person& a, const Person& b) {
     return a.height < b.height;
 }
 
-inline bool ascendingInt(const long long& first, const long long& second) {
-    return first < second; // Возвращает true, если первый меньше второго
-}
-
-*/
-inline bool ascendingInt(const int& first, const int& second) {
-    return first < second; // Возвращает true, если первый меньше второго
-}
 template<typename T>
-double loadTestSort(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
+double loadTestSortSorted(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
     LinkedList<int> List;
 
-    srand(static_cast<unsigned int>(time(0)));
+    // Заполняем список отсортированными числами
     for (int i = 0; i < N; ++i) {
-        List.Append(rand()); // Заполняем список случайными числами
+        List.Append(i); // Последовательность уже отсортирована
+    }
+
+    // Начинаем отсчет времени
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Вызываем метод сортировки через переданный объект sorter
+    sorter.Sort(List, precedes);
+
+    // Останавливаем отсчет времени
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    return duration.count(); // Возвращаем длительность
+}
+
+template<typename T>
+double loadTestSortReverseSorted(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
+    LinkedList<int> List;
+
+    // Заполняем список числами в убывающем порядке
+    for (int i = N - 1; i >= 0; --i) {
+        List.Append(i); // Последовательность обратная отсортированной
     }
 
     // Начинаем отсчет времени
@@ -121,21 +140,27 @@ double loadTestSort(int N, T& sorter, bool (*precedes)(const int& first, const i
 
 
 
+template<typename T>
+double loadTestSort(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
+    LinkedList<int> List;
+    
+    srand(static_cast<unsigned int>(time(0)));
+    for (int i = 0; i < N; ++i) {
+        List.Append(rand()); // Заполняем список случайными числами
+    }
 
+    // Начинаем отсчет времени
+    auto start = std::chrono::high_resolution_clock::now();
 
+    // Вызываем метод сортировки через переданный объект sorter
+    sorter.Sort(List, precedes);
 
+    // Останавливаем отсчет времени
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
 
-
-
-
-
-
-
-
-
-
-
-
+    return duration.count(); // Возвращаем длительность
+}
   
 template<typename Sorter>
 void Sorter_test1(Sorter& sorter, bool (*precedes)(const int& first, const int& second)) {
@@ -145,13 +170,12 @@ void Sorter_test1(Sorter& sorter, bool (*precedes)(const int& first, const int& 
 
     LinkedList<int> list(array, size);
 
-    sorter.Sort(list, precedes); // Передаем компаратор в метод Sort
+    sorter.Sort(list, precedes); 
 
     for (int i = 0; i < size; i++) {
         assert(list.GetElement(i) == sortedArray[i]);
     }
 }
-
 
 template<typename Sorter>
 void Sorter_test2(Sorter& sorter, bool (*precedes)(const int& first, const int& second)) {
@@ -246,5 +270,5 @@ void Sorter_test7(Sorter& sorter, bool (*precedes)(const int& first, const int& 
     }
 }
 
-   void comparing();
-   void checking();
+void comparing();
+void checking();

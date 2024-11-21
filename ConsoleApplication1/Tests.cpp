@@ -44,17 +44,8 @@ void testSorts(int n) {
 	// 
 	//проверить на отсортированном частично отсортированном и на обратно отсортированном
 
-	// Реализация оператора вывода
-	/*
-	ostream& operator<<(ostream& os, const Person& person) {
-		os << "Person(" << person.firstName << " " << person.lastName
-			<< ", Birth Year: " << person.birthYear
-			<< ", Height: " << person.height << "m"
-			<< ", Weight: " << person.weight << "kg"
-			<< ", id: " << person.id << ")" << endl;
-		return os;
-	}*/
 
+	
 	void checking() {
 
 		QuickSort<int> quickSorter;

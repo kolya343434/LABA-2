@@ -46,6 +46,8 @@ public:
     }
 };
 
+//#include <algorithm> // Для std::swap
+
 template <typename T>
 class QuickSort : public ISorter<T> {
 public:
@@ -54,7 +56,7 @@ public:
             return; // Ничего не делаем для пустой или слишком короткой последовательности
         }
 
-        // Вызов рекурсивного быстрого сортировки
+        // Вызов рекурсивной быстрой сортировки
         QuickSortRecursive(sequence, 0, sequence.GetLength() - 1, precedes);
     }
 
@@ -69,12 +71,26 @@ private:
     }
 
     int Partition(Sequence<T>& sequence, int start, int end, bool (*precedes)(const T& first, const T& second)) {
-        T pivot = sequence.GetElement(end); // Используем Get, предполагая, что это метод доступа
+        // Используем медиану трёх для выбора pivot
+        int mid = start + (end - start) / 2;
+
+        // Сравниваем и перемещаем элементы: start, mid, end
+        if (precedes(sequence.GetElement(mid), sequence.GetElement(start)))
+            sequence.Swap(sequence.GetElement(start), sequence.GetElement(mid));
+        if (precedes(sequence.GetElement(end), sequence.GetElement(start)))
+            sequence.Swap(sequence.GetElement(start), sequence.GetElement(end));
+        if (precedes(sequence.GetElement(end), sequence.GetElement(mid)))
+            sequence.Swap(sequence.GetElement(mid), sequence.GetElement(end));
+
+        // После этих операций медиана находится на позиции mid
+        sequence.Swap(sequence.GetElement(mid), sequence.GetElement(end)); // Ставим pivot в конец
+
+        T pivot = sequence.GetElement(end);
         int partitionIndex = start;
 
         for (int i = start; i < end; i++) {
             if (precedes(sequence.GetElement(i), pivot)) {
-                sequence.Swap(sequence.GetElement(i), sequence.GetElement(partitionIndex) ); // Swap работает с индексами
+                sequence.Swap(sequence.GetElement(i), sequence.GetElement(partitionIndex));
                 partitionIndex++;
             }
         }
