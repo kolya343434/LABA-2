@@ -11,8 +11,9 @@ void Interface() {
 
     QuickSort<int> sorterr;
     LinkedList<int> pot;
-   // sorterr.Sort(pot, ascendingInt);
     /*
+    sorterr.Sort(pot, ascendingInt);
+    
     cout << loadTestSortSorted(1000, sorterr, ascendingInt) << endl;
     cout << loadTestSort(1000, sorterr, ascendingInt) << endl;
     cout << loadTestSortReverseSorted(1000, sorterr, ascendingInt) << endl;
@@ -85,10 +86,11 @@ void Interface() {
 
                     WriteRandomNumbersToFile(p, name);
 
-
+                    LinkedList<int> tester1;
                     QuickSort<int> sorter;
-                    sorter.Sort(tester1, ascendingInt);
+                   
                     ReadNumbersFromFile(name, tester1);
+                    sorter.Sort(tester1, ascendingInt);
                     cout << "should we print sequence? (Yes/No)" << endl;
                     string write;
                     cin >> write;
@@ -568,7 +570,7 @@ void Interface() {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                
                 if (selectt == 1) {
-                    cout << "Введите числа для добавления в контейнер, разделенные пробелами. Нажмите Enter для завершения:";
+                    cout << "write numbers to add:";
                     LinkedList<int> lIST;  // Используем long long для больших чисел
                     QuickSort<int> sorterr;
                     
@@ -642,7 +644,7 @@ void Interface() {
 
                     std::string input_line;
 
-                    std::cout << "Введите числа для добавления в DynamicArray, разделенные пробелами. Нажмите Enter для завершения:" << std::endl;
+                    cout << "write numbers to add:";
 
                     // Считываем строку чисел, ввод завершится после нажатия Enter
                     std::getline(std::cin, input_line);

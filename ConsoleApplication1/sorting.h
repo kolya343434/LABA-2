@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "ISorter.h"
-//#include "LinkedList.h"
 #include "Sequence.h"
 #include <iostream>
 

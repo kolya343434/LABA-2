@@ -5,9 +5,8 @@
 #include "LinkedList.h"
 #include <cassert>
 #include <sstream>
-#include <string>
 
-using namespace std;
+
 
 
 struct Person {
@@ -70,10 +69,6 @@ struct Person {
     }
 };
 
-
-
-
-
 inline bool ascendingInt(const int& first, const int& second) {
     return first < second;
 }
@@ -93,6 +88,7 @@ inline bool CompareById(const Person& a, const Person& b) {
 inline bool CompareByHeight(const Person& a, const Person& b) {
     return a.height < b.height;
 }
+
 
 template<typename T>
 double loadTestSortSorted(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
@@ -115,6 +111,8 @@ double loadTestSortSorted(int N, T& sorter, bool (*precedes)(const int& first, c
 
     return duration.count(); // Возвращаем длительность
 }
+
+
 
 template<typename T>
 double loadTestSortReverseSorted(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {

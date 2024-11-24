@@ -21,14 +21,3 @@ public:
 };
 
 
-// inline bool precedesInt(const int& first, const int& second) { return first < second; }
-
-
-//реализация компаратора правильная , bool (precedes*)(conat T &first, conat T &second)
-
-/*
-
-inline bool ascendingInt(const int& first, const int& second) { return first < second; }
-inline bool descendingInt(const int& first, const int& second) { return first > second; }
-
-bool personCompare(const Person&, const Person&);*/

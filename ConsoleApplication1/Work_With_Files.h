@@ -65,6 +65,3 @@ void WriteSequenceToFile(std::string& fileName, Sequence<T>* numbers)
 }
 
 
-
-/// sequence add to readdata
-// размер одного элемента в файле 300 байт

@@ -14,6 +14,9 @@
 //ключ 
 
 
+
+
+
 void testSorts(int n) {
 
 	QuickSort<int> quickSorter;
