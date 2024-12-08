@@ -2,6 +2,7 @@
 
 using namespace std;
 
+
 int interface_for_extract() {
 
     const int NUM_COUNT = 10000; 
@@ -34,7 +35,7 @@ int interface_for_extract() {
 
    // numbers.Print();
 
-    std::cout << "Количество чисел: " << numbers.GetLength() << "\n";
+    std::cout << "Количество чисел: " << numbers.GetLength()<<"\n";
 
     return 0;
 }
@@ -250,7 +251,7 @@ void Interface() {
                 
                 cout 
                     << "1) Read from file numbers\n"
-                    << "2) Random numbers sort\n";
+                    << "2) Random numbers big data \n";
 
                 int n;
                 cin >> n;
@@ -263,6 +264,7 @@ void Interface() {
                 }
                 case 2: {
                     interface_for_extract();
+                    break;
                 }
                 default:
                     cout << "Incorrect selection, please try again." << endl;
