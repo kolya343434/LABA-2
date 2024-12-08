@@ -9,7 +9,7 @@ void LinkedList<T>::Print() {
     Node* current = head;
     cout << "Elements in the list: ";
     while (current) {
-        cout << current->data<< " "; // Оператор << должен быть определён для типа T
+        cout << current->data<< " "; 
         current = current->next;
     }
     cout << endl;
