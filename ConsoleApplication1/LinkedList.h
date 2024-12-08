@@ -255,15 +255,19 @@ public:
 
   
 
-    void Print() {
-        Node* current = head;
-        cout << "Elements in the list: ";
-        while (current) {
-            cout << current->data << " "; // “еперь оператор << должен работать с типом T
-            current = current->next;
+    void Print() override;
+    /* {
+
+        {
+            Node* current = head;
+            cout << "Elements in the list: ";
+            while (current) {
+                cout << current->data << " "; // “еперь оператор << должен работать с типом T
+                current = current->next;
+            }
+            cout << endl;
         }
-        cout << endl;
-    }
+    }*/
 
     void Clear() {
         Node* current = head;

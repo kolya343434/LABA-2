@@ -1,38 +1,208 @@
-﻿
-#include "Sorting.h"
-#include "Work_With_Files.h"
-#include "Tests.h"
-#include "Interface.h"
+﻿#include "Interface.h"
 
 using namespace std;
 
+int interface_for_extract() {
+
+    const int NUM_COUNT = 10000; 
+    LinkedList<Extract<int>> numbers; 
+
+    std::string filename = "random_numbers.txt"; 
+    std::ifstream infile(filename);
+
+    if (!infile.is_open()) {
+        std::cerr << "Не удалось открыть файл " << filename << " для чтения.\n";
+        return 1;
+    }
+
+    int num;
+    int i = 0;
+    while (i < NUM_COUNT && infile >> num) {
+        numbers.Append(Extract<int>(i, num)); 
+        ++i;
+    }
+
+    infile.close(); 
+
+    std::cout << "Сортировка чисел по значению...\n";
+
+    QuickSort<Extract<int>> sorter;
+
+    sorter.Sort(numbers, compareExtract<int>);
+
+    std::cout << "Отсортированные числа:\n";
+
+   // numbers.Print();
+
+    std::cout << "Количество чисел: " << numbers.GetLength() << "\n";
+
+    return 0;
+}
+
+enum ContainerType {
+    LINKED_LIST = 1,
+    DYNAMIC_ARRAY = 2
+};
+
+enum SortType {
+    QUICK_SORT = 1,
+    INSERTION_SORT = 2,
+    BUBBLE_SORT = 3
+};
+
+
+ContainerType chooseContainerType() {
+    cout << "1) Work with LinkedList\n"
+        << "2) Work with DynamicArray\n";
+    int choice;
+    cin >> choice;
+    if (choice == 1) return LINKED_LIST;
+    else if (choice == 2) return DYNAMIC_ARRAY;
+    else {
+        cout << "Invalid selection. Using default LinkedList.\n";
+        return LINKED_LIST;
+    }
+}
+
+//  выбор сортировки
+SortType chooseSortType() {
+    cout << "1) Quicksort\n"
+        << "2) InsertionSort\n"
+        << "3) BubbleSort\n"
+        << "Choose sorting: ";
+    int ch;
+    cin >> ch;
+    switch (ch) {
+    case 1: return QUICK_SORT;
+    case 2: return INSERTION_SORT;
+    case 3: return BUBBLE_SORT;
+    default:
+        cout << "Invalid selection. Using QuickSort by default.\n";
+        return QUICK_SORT;
+    }
+}
+
+
+
+//  для сортировки 
+template <typename T, typename Compare>
+void sortContainer(Sequence<T>& sequence, SortType sortType, Compare cmp) {
+    switch (sortType) {
+    case QUICK_SORT: {
+        QuickSort<T> sorter;
+        sorter.Sort(sequence, cmp);
+        break;
+    }
+    case INSERTION_SORT: {
+        InsertionSort<T> sorter;
+        sorter.Sort(sequence, cmp);
+        break;
+    }
+    case BUBBLE_SORT: {
+        BubbleSorter<T> sorter;
+        sorter.Sort(sequence, cmp);
+        break;
+    }
+    default:
+        QuickSort<T> sorter;
+        sorter.Sort(sequence, cmp);
+        break;
+    }
+}
+
+
+template <typename T>
+void printAndWriteResult(Sequence<T>& container) {
+    cout << "Should we print sequence? (Yes/No)\n";
+    {
+        string answer;
+        cin >> answer;
+        if (answer == "Yes") {
+            container.Print();
+        }
+        else if (answer != "No") {
+            cout << "Uncorrect data" << endl;
+        }
+    }
+
+    cout << "Should we write this data to file? (Yes/No)\n";
+    {
+        string answer;
+        cin >> answer;
+        if (answer == "Yes") {
+            string fileNameOut;
+            cout << "Write file name: ";
+            cin >> fileNameOut;
+            WriteSequenceToFile(fileNameOut, &container);
+        }
+        else if (answer != "No") {
+            cout << "Uncorrect data" << endl;
+        }
+    }
+}
+
+// чтения из файла и сортировки
+template <typename T, typename Compare>
+void handleFileCase(const string& fileName, Compare cmp) {
+    ContainerType ct = chooseContainerType();
+    SortType st = chooseSortType();
+
+    if (ct == LINKED_LIST) {
+        LinkedList<T> list;
+        ReadNumbersFromFile(fileName, list);
+        sortContainer<T>(list, st, cmp);
+        printAndWriteResult(list);
+    }
+    else {
+        DynamicArray<T> arr;
+        ReadNumbersFromFile(fileName, arr);
+        sortContainer<T>(arr, st, cmp);
+        printAndWriteResult(arr);
+    }
+}
+
+//  обработки ввода от пользователя
+template <typename T, typename Compare>
+void handleUserInputCase(Compare cmp) {
+    ContainerType ct = chooseContainerType();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // очистка буфера
+    cout << "Write numbers to add: ";
+    string input_line;
+    std::getline(std::cin, input_line);
+
+    SortType st = chooseSortType();
+
+    if (ct == LINKED_LIST) {
+        LinkedList<T> list;
+        {
+            std::istringstream iss(input_line);
+            T val;
+            while (iss >> val) {
+                list.Prepend(val);
+            }
+        }
+        sortContainer<T>(list, st, cmp);
+        list.Print();
+    }
+    else {
+        DynamicArray<T> arr;
+        {
+            std::istringstream iss(input_line);
+            T val;
+            while (iss >> val) {
+                arr.Prepend(val);
+            }
+        }
+        sortContainer<T>(arr, st, cmp);
+        arr.Print();
+    }
+}
+
+
+
 
 void Interface() {
-
-    QuickSort<int> sorterr;
-    LinkedList<int> pot;
-    /*
-    sorterr.Sort(pot, ascendingInt);
-    
-    cout << loadTestSortSorted(1000, sorterr, ascendingInt) << endl;
-    cout << loadTestSort(1000, sorterr, ascendingInt) << endl;
-    cout << loadTestSortReverseSorted(1000, sorterr, ascendingInt) << endl;
-    cout << "\n";
-    cout << loadTestSortSorted(2000, sorterr, ascendingInt) << endl;
-    cout << loadTestSort(2000, sorterr, ascendingInt) << endl;
-    cout << loadTestSortReverseSorted(2000, sorterr, ascendingInt) << endl;
-    cout << "\n";
-    cout << loadTestSortSorted(3000, sorterr, ascendingInt) << endl;
-    cout << loadTestSort(3000, sorterr, ascendingInt) << endl;
-    cout << loadTestSortReverseSorted(3000, sorterr, ascendingInt) << endl;
-    */
-    int n;
-    checking();
-
-    LinkedList<int> tester1;  // Создаем экземпляр связанного списка
-    // DynamicArray<int> tester2; // Создаем экземпляр динамического массива
-
-    checking();
+    checking(); 
 
     while (true) {
         cout << "1) Sort" << endl;
@@ -40,686 +210,90 @@ void Interface() {
         cout << "0) Exit" << endl;
         cout << "Write number: ";
 
-        // Читаем выбор пользователя
+        int n;
         cin >> n;
 
-        if (cin.fail()) { // Проверяем, если ввод некорректен
+        if (cin.fail()) {
             cout << "Error: Please enter a valid number." << endl;
-            cin.clear(); // Очищаем состояние cin
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Игнорируем остаток строки
-            continue; // Запрашиваем ввод снова
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
         }
 
         if (n == 0) {
             cout << "Program finished." << endl;
-            break; // Выход из цикла
+            break;
         }
 
         switch (n) {
         case 1: {
+            cout << "1) Random numbers sort\n"
+                << "2) Read from file numbers\n"
+                << "3) Read struct from file\n"
+                << "4) Write sequence from console\n"
+                << "5) Exit to main menu\n";
             int switcher;
-            cout << "1) Random numbers sort\n";
-            cout << "2) Read from file numbers\n";
-            cout << "3) Read struct from file\n";
-            cout << "4) write sequence\n";
-            cout << "5) Exit to main menu\n";
-            cout << "Write number: ";
-
             cin >> switcher;
 
             switch (switcher) {
             case 1: {
-                cout << "1) Work with LinkedList" << endl;
-                cout << "2) Work with DynamicArray" << endl;
-
-                int switcher_in_case1;
-                cin >> switcher_in_case1;
-
-                if (switcher_in_case1 == 1) {
-                    int p;
-                    string name;
-
-                    cout << "Enter length: ";
-                    cin >> p;
-                    cout << "File name: ";
-                    cin >> name;
-
-                    WriteRandomNumbersToFile(p, name);
-
-                    LinkedList<int> tester1;
-                    QuickSort<int> sorter;
-                   
-                    ReadNumbersFromFile(name, tester1);
-                    sorter.Sort(tester1, ascendingInt);
-                    cout << "should we print sequence? (Yes/No)" << endl;
-                    string write;
-                    cin >> write;
-                    if (write == "Yes") {
-                        tester1.Print();
-                    }
-                    else if (write == "No") {
-                        break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-                    }
-
-                }
-                else if (switcher_in_case1 == 2) {
-                    int p;
-                    string name;
-
-                    cout << "Enter length: ";
-                    cin >> p;
-                    cout << "File name: ";
-                    cin >> name;
-
-                    WriteRandomNumbersToFile(p, name);
-                    ReadNumbersFromFile(name, tester1);
-
-                    QuickSort<int> sorter;
-                    sorter.Sort(tester1, ascendingInt);
-
-                    cout << "should we print sequence? (Yes/No)" << endl;
-                    string write;
-                    cin >> write;
-
-                    if (write == "Yes") {
-                        tester1.Print();
-                    }
-                    else if (write == "No") {
-                        break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-                    }
-
-
-                }
-                else {
-                    cout << "Invalid selection." << endl;
-                }
-                break; // Добавлено, чтобы выйти из case 1
-            }
-            case 2: {
-
-                int sele;
-                cout << "1)small_data" << endl;
-                //  cout << "2)huge_data" << endl;
-                cout << "2)from your own file" << endl;
-                cin >> sele;
-
-                if (sele == 1) {
-
-                    // Ваш код для чтения и сортировки из файла
-
-                    cout << "1) Work with LinkedList" << endl;
-                    cout << "2) Work with DynamicArray" << endl;
-
-                    int switcher_in_case2;
-                    cin >> switcher_in_case2;
-
-                    if (switcher_in_case2 == 1) {
-                        LinkedList<int> list_int;
-
-                        int choser;
-
-                        cout << "1) Quicksort" << endl;
-                        cout << "2) InsertionSort" << endl;
-                        cout << "3) BubbleSort" << endl;
-                        cout << "Choose sorting: ";
-                        cin >> choser;
-
-                        ReadNumbersFromFile("test_small_data.txt", list_int);
-
-
-
-                        if (choser == 1) {
-                            QuickSort<int> sorterr;
-                            sorterr.Sort(list_int, ascendingInt);
-                        }
-                        else if (choser == 2) {
-                            InsertionSort<int> sorterr;
-                            sorterr.Sort(list_int, ascendingInt);
-                        }
-                        else if (choser == 3) {
-                            BubbleSorter<int> sorterr;
-                            sorterr.Sort(list_int, ascendingInt);
-
-                        }
-
-
-
-                        cout << "should we print sequence? (Yes/No)" << endl;
-                        string write1;
-                        cin >> write1;
-                        if (write1 == "Yes") {
-                            list_int.Print();
-                        }
-                        else if (write1 == "No") {
-                            //break;
-                        }
-                        else {
-                            cout << "uncorrect data" << endl;
-                            break;
-                        }
-
-
-                        // list_int.Print();  Печать отсортированного массива
-
-
-                        cout << "should we write this data to file ? (Yes/No)" << endl;
-                        string write;
-                        cin >> write;
-                        if (write == "Yes") {
-
-                            string fileNameOut;
-
-                            cout << "write file name" << endl;
-                            cin >> fileNameOut;
-
-
-
-                            WriteSequenceToFile(fileNameOut, &list_int);
-
-                        }
-                        else if (write == "No") {
-                            break;
-                        }
-                        else {
-                            cout << "uncorrect data" << endl;
-                            break;
-                        }
-
-
-                    }
-                    else if (switcher_in_case2 == 2) {
-                        DynamicArray<int> list_int;
-                        int choser;
-                        cout << "1) Quicksort" << endl;
-                        cout << "2) InsertionSort" << endl;
-                        cout << "3) BubbleSort" << endl;
-                        cout << "Choose sorting: ";
-                        cin >> choser;
-
-                        ReadNumbersFromFile("test_small_data.txt", list_int);
-
-                        if (choser == 1) {
-                            QuickSort<int> sorterr;
-                            sorterr.Sort(list_int, ascendingInt);
-                        }
-                        else if (choser == 2) {
-                            InsertionSort<int> sorterr;
-                            sorterr.Sort(list_int, ascendingInt);
-                        }
-                        else if (choser == 3) {
-                            BubbleSorter<int> sorterr;
-                            sorterr.Sort(list_int, ascendingInt);
-
-                        }
-
-
-                        cout << "should we print sequence? (Yes/No)" << endl;
-                        string write1;
-                        cin >> write1;
-                        if (write1 == "Yes") {
-                            list_int.Print();
-                        }
-                        else if (write1 == "No") {
-                            //break;
-                        }
-                        else {
-                            cout << "uncorrect data" << endl;
-                            break;
-                        }
-
-
-
-                        //list_int.Print(); // Печать отсортированного массива
-
-                        cout << "should we write this data to file ? (Yes/No)" << endl;
-                        string write;
-                        cin >> write;
-                        if (write == "Yes") {
-
-                            string fileNameOut;
-
-                            cout << "write file name" << endl;
-                            cin >> fileNameOut;
-
-
-
-                            WriteSequenceToFile(fileNameOut, &list_int);
-
-                        }
-                        else if (write == "No") {
-                            break;
-                        }
-                        else {
-                            cout << "uncorrect data" << endl;
-                            break;
-
-                        }
-                    }
-                    else {
-                        cout << "Invalid selection." << endl;
-                    }
-                    break; // Добавлено, чтобы выйти из case 2
-                }
-
-                if (sele == 2) {
-                    LinkedList<int > list;
-                    cout << "Write file" << endl;
-                    string name;
-                    cin >> name;
-                    ReadNumbersFromFile(name, list);
-
-                    int choser;
-
-                    cout << "1) Quicksort" << endl;
-                    cout << "2) InsertionSort" << endl;
-                    cout << "3) BubbleSort" << endl;
-                    cout << "Choose sorting: ";
-                    cin >> choser;
-
-                    if (choser == 1) {
-                        QuickSort<int> sorterr;
-                        sorterr.Sort(list, ascendingInt);
-                    }
-                    else if (choser == 2) {
-                        InsertionSort<int> sorterr;
-                        sorterr.Sort(list, ascendingInt);
-                    }
-                    else if (choser == 3) {
-                        BubbleSorter<int> sorterr;
-                        sorterr.Sort(list, ascendingInt);
-
-                    }
-                    else {
-                        cout << "uncorrect" << endl;
-                        break;
-                    }
-                    cout << "should we print sequence? (Yes/No)" << endl;
-                    string write;
-                    cin >> write;
-
-                    if (write == "Yes") {
-                        list.Print();
-                    }
-                    else if (write == "No") {
-                        // break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-                    }
-
-
-
-
-                    cout << "should we write this data to file ? (Yes/No)" << endl;
-                    string writte;
-                    cin >> writte;
-
-                    if (writte == "Yes") {
-
-                        string fileNameOut;
-
-                        cout << "write file name" << endl;
-                        cin >> fileNameOut;
-
-
-
-                        WriteSequenceToFile(fileNameOut, &list);
-
-                    }
-                    else if (writte == "No") {
-                        break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-
-                    }
-
-
-
-
-
-                }
+                
+                cout << "Enter length: ";
+                int p; cin >> p;
+                cout << "File name: ";
+                string name; cin >> name;
+                WriteRandomNumbersToFile(p, name);
+                handleFileCase<int>(name, ascendingInt);
                 break;
             }
-            case 3: {
+            case 2: {
+                
+                cout 
+                    << "1) Read from file numbers\n"
+                    << "2) Random numbers sort\n";
 
+                int n;
+                cin >> n;
 
-                int selectt;
-
-                cout << "1) Work with LinkedList" << endl;
-                cout << "2) Work with DynamicArray" << endl;
-
-                cin >> selectt;
-
-                if (selectt == 1) {
-
-                    LinkedList<Person> personaa;
-
-                    personaa.Clear();
-                    ReadNumbersFromFile("people.txt", personaa);
-                    // personaa.Print();
-
-                    int choser;
-
-                    cout << "1) Quicksort" << endl;
-                    cout << "2) InsertionSort" << endl;
-                    cout << "3) BubbleSort" << endl;
-                    cin >> choser;
-
-                    cout << "sort_by_height" << endl;
-                    if (choser == 1) {
-                        QuickSort<Person> sorterr;
-                        sorterr.Sort(personaa, CompareByHeight);
-                    }
-                    else if (choser == 2) {
-                        InsertionSort<Person> sorterr;
-                        sorterr.Sort(personaa, CompareByHeight);
-                    }
-                    else if (choser == 3) {
-                        BubbleSorter<Person> sorterr;
-                        sorterr.Sort(personaa, CompareByHeight);
-
-                    }
-
-                    else {
-
-                        cout << "Invalid selection." << endl;
-                    }
-
-                    cout << "should we print sequence? (Yes/No)" << endl;
-                    string write1;
-                    cin >> write1;
-                    if (write1 == "Yes") {
-                        personaa.Print();
-                    }
-                    else if (write1 == "No") {
-                        //break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-                    }
-
-                    cout << "should we write this data to file ? (Yes/No)" << endl;
-                    string write;
-                    cin >> write;
-                    if (write == "Yes") {
-
-                        string fileNameOut;
-
-                        cout << "write file name" << endl;
-                        cin >> fileNameOut;
-
-
-
-                        WriteSequenceToFile(fileNameOut, &personaa);
-
-                    }
-                    else if (write == "No") {
-                        break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-                    }
-
+                switch (n) {
+                case 1: {
+                    cout << "Write file: ";
+                    string fname; cin >> fname;
+                    handleFileCase<int>(fname, ascendingInt);
                 }
-
-                else if (selectt == 2) {
-                  
-                    DynamicArray<Person> persona;
-                    ReadNumbersFromFile("people.txt", persona);
-                   
-                    cout << "write sequence" << endl;
-
-                    int choser;
-                    cout << "1) Quicksort" << endl;
-                    cout << "2) InsertionSort" << endl;
-                    cout << "3) BubbleSort" << endl;
-                    cin >> choser;
-
-                    cout << "sort_by_height" << endl;
-                    if (choser == 1) {
-                        QuickSort<Person> sorterr;
-                        sorterr.Sort(persona, CompareByHeight);
-                    }
-                    else if (choser == 2) {
-                        InsertionSort<Person> sorterr;
-                        sorterr.Sort(persona, CompareByHeight);
-                    }
-                    else if (choser == 3) {
-                        BubbleSorter<Person> sorterr;
-                        sorterr.Sort(persona, CompareByHeight);
-
-                    }
-                    else {
-                        cout << "Invalid selection." << endl;
-                    }
-
-                    cout << "should we print sequence? (Yes/No)" << endl;
-                    string write1;
-                    cin >> write1;
-                    if (write1 == "Yes") {
-                        persona.Print();
-                    }
-                    else if (write1 == "No") {
-                        //break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-                    }
-
-                    cout << "should we write this data to file ? (Yes/No)" << endl;
-                    string write;
-                    cin >> write;
-                    if (write == "Yes") {
-
-                        string fileNameOut;
-
-                        cout << "write file name" << endl;
-                        cin >> fileNameOut;
-
-
-
-                        WriteSequenceToFile(fileNameOut, &persona);
-
-                    }
-                    else if (write == "No") {
-                        break;
-                    }
-                    else {
-                        cout << "uncorrect data" << endl;
-                        break;
-                    }
-                    persona.Print();
-                    //persona.Clear();
+                case 2: {
+                    interface_for_extract();
                 }
-
-
-
-
-
-
-                else {
-                    cout << "Invalid selection." << endl;
+                default:
+                    cout << "Incorrect selection, please try again." << endl;
+                    break;
                 }
-
-                break; // Добавлено, чтобы выйти из case 3
+                break;
 
             }
-            case 4: {
                 
-                int selectt;
+
             
-                std::cout << "1) Work with LinkedList" << std::endl;
-                std::cout << "2) Work with DynamicArray" << std::endl;
-                std::cin >> selectt;
+            case 3: {
+        
+                cout << "Sort by height" << endl;
+                handleFileCase<Person>("people.txt", CompareByHeight);
+                break;
+            }
+            case 4: {
                
-                // Очищаем символ новой строки из буфера
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-               
-                if (selectt == 1) {
-                    cout << "write numbers to add:";
-                    LinkedList<int> lIST;  // Используем long long для больших чисел
-                    QuickSort<int> sorterr;
-                    
-                    std::string input_line;
-
-                   
-
-                    // Считываем строку чисел, ввод завершится после нажатия Enter
-                    std::getline(std::cin, input_line);
-
-                    int number = 0;
-                    bool has_number = false; // Флаг, указывающий, что мы находимся внутри числа
-
-                    for (char ch : input_line) {
-                        if (std::isdigit(ch)) { // Если символ - цифра
-                            number = number * 10 + (ch - '0'); // Формируем число
-                            has_number = true;
-                        }
-                        else if (ch == ' ' && has_number) { // Если пробел и есть число
-                            lIST.Prepend(number); // Добавляем число в список
-                            number = 0;           // Сбрасываем для следующего числа
-                            has_number = false;   // Устанавливаем флаг
-                        }
-                    }
-
-                    // Добавляем последнее число, если оно было введено
-                    if (has_number) {
-                        lIST.Prepend(number);
-                    }
-
-                    // Выводим список
-                    cout << "Числа, добавленные в LinkedList:" << endl;
-                    lIST.Print();
-
-                    int choser;
-                    cout << "1) Quicksort" << endl;
-                    cout << "2) InsertionSort" << endl;
-                    cout << "3) BubbleSort" << endl;
-                    cin >> choser;
-
-
-                    if (choser == 1) {
-                        QuickSort<int> sorterrr;
-                        sorterrr.Sort(lIST, ascendingInt);
-                    }
-                    else if (choser == 2) {
-                        InsertionSort<int> sorterrr;
-                        sorterrr.Sort(lIST, ascendingInt);
-                    }
-                    else if (choser == 3) {
-                        BubbleSorter<int> sorterrr;
-                        sorterrr.Sort(lIST, ascendingInt);
-
-                    }
-                    else {
-                        cout << "Invalid selection." << endl;
-                        break;
-                    }
-
-                    // Сортируем и выводим отсортированный список
-
-                    lIST.Print();
-
-                }
-
-                else if (selectt == 2) {
-
-
-                    DynamicArray<int> lISTt;  // Используем long long для больших чисел
-                    //Sort<long long> sorterr;
-
-                    std::string input_line;
-
-                    cout << "write numbers to add:";
-
-                    // Считываем строку чисел, ввод завершится после нажатия Enter
-                    std::getline(std::cin, input_line);
-
-                    int number = 0;
-                    bool has_number = false; // Флаг, указывающий, что мы находимся внутри числа
-
-                    for (char ch : input_line) {
-
-                        if (std::isdigit(ch)) { // Если символ - цифра
-                            number = number * 10 + (ch - '0'); // Формируем число
-                            has_number = true;
-                        }
-
-                        else if (ch == ' ' && has_number) { // Если пробел и есть число
-                            lISTt.Prepend(number); // Добавляем число в список
-                            number = 0;           // Сбрасываем для следующего числа
-                            has_number = false;   // Устанавливаем флаг
-                        }
-                    }
-
-                    // Добавляем последнее число, если оно было введено
-                    if (has_number) {
-                        lISTt.Prepend(number);
-                    }
-
-                    // Выводим список
-                    std::cout << "Числа, добавленные в LinkedList:" << std::endl;
-                    lISTt.Print();
-
-                    int choser;
-                    cout << "1) Quicksort" << endl;
-                    cout << "2) InsertionSort" << endl;
-                    cout << "3) BubbleSort" << endl;
-                    cin >> choser;
-
-                    if (choser == 1) {
-                        QuickSort<int> sorterrr;
-                        sorterrr.Sort(lISTt, ascendingInt);
-                    }
-                    else if (choser == 2) {
-                        InsertionSort<int> sorterrr;
-                        sorterrr.Sort(lISTt, ascendingInt);
-                    }
-                    else if (choser == 3) {
-                        BubbleSorter<int> sorterrr;
-                        sorterrr.Sort(lISTt, ascendingInt);
-
-                    }
-                    else {
-                        cout << "Invalid selection." << endl;
-                        break;
-                    }
-
-                    // Сортируем и выводим отсортированный список
-
-                    lISTt.Print();
-
-
-                }
-                else {
-                    cout << "Invalid selection." << endl;
-                }
+                handleUserInputCase<int>(ascendingInt);
                 break;
             }
             case 5: {
-
                 cout << "Returning to the main menu." << endl;
                 break;
-
             }
             default:
                 cout << "Incorrect selection, please try again." << endl;
+                break;
             }
-            break; // Добавлено, чтобы выйти из case 1 в основном switch
+            break;
         }
         case 2: {
             comparing();
@@ -727,7 +301,7 @@ void Interface() {
         }
         default:
             cout << "Incorrect selection in the main menu, please try again." << endl;
+            break;
         }
-
     }
 }

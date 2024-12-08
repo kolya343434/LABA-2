@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="ConsoleApplication1.cpp" />
     <ClCompile Include="Interface.cpp" />
+    <ClCompile Include="DynamicArray_Print.h" />
     <ClCompile Include="Sequence_Tests.cpp" />
     <ClCompile Include="sorting.h" />
     <ClCompile Include="Tests.cpp" />
@@ -144,9 +145,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DynamicArray.h" />
+    <ClInclude Include="Extract.h" />
     <ClInclude Include="Interface.h" />
     <ClInclude Include="ISorter.h" />
     <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="LinkedList_Print.h" />
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="Sequence_Tests.h" />
     <ClInclude Include="Tests.h" />

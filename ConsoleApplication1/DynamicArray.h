@@ -203,14 +203,15 @@ public:
     }
 
 
-    void Print() const {
+    void Print() override;/*
+     {
         std::cout << "Elements in the array: ";
         for (int i = 0; i < size; i++) { // size - текущий размер массива
             std::cout << data[i] << " "; // data - указатель на массив элементов
         }
         std::cout << std::endl;
-    }
-
+    }*/
+    
 
 
     void Clear() {

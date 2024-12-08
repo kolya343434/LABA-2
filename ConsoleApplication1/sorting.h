@@ -2,7 +2,7 @@
 
 #include "ISorter.h"
 #include "Sequence.h"
-#include <iostream>
+
 
 template <typename T>
 class InsertionSort : public ISorter<T> {
@@ -31,21 +31,28 @@ template <class T>
 class BubbleSorter : public ISorter<T> {
 public:
     void Sort(Sequence<T>& sequence, bool (*precedes)(const T& first, const T& second)) override {
-        int n = sequence.GetLength(); // Получаем длину последовательности
+        int n = sequence.GetLength();
         for (int i = 0; i < n - 1; i++) {
+            bool swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
-                if (!precedes(sequence.GetElement(j), sequence.GetElement(j + 1))) {
-                    // Если порядок нарушен, меняем элементы местами
-                    T temp = sequence.GetElement(j);
-                    sequence.Set(j, sequence.GetElement(j + 1));
-                    sequence.Set(j + 1, temp);
+                // Получаем элементы один раз и сохраняем во временные переменные
+                T first = sequence.GetElement(j);
+                T second = sequence.GetElement(j + 1);
+                if (!precedes(first, second)) {
+                    // Меняем элементы местами
+                    sequence.Set(j, second);
+                    sequence.Set(j + 1, first);
+                    swapped = true;
                 }
+            }
+            if (!swapped) {
+                break;
             }
         }
     }
 };
 
-//#include <algorithm> // Для std::swap
+
 
 template <typename T>
 class QuickSort : public ISorter<T> {

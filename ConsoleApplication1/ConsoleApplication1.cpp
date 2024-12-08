@@ -1,12 +1,11 @@
-﻿
-#include "Interface.h"
+﻿#include "Interface.h"
 
-
-
+#include <locale>  
+#include <clocale>
 
 int main() {
-  
-   Interface();
+    std::setlocale(LC_ALL, "Russian");
+  Interface();
 
     return 0;
 }

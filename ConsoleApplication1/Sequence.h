@@ -16,6 +16,7 @@ public:
     virtual int GetLength() = 0;
     virtual void Append(T item) = 0;
     virtual void Prepend(T item) = 0;
+    virtual void Print() = 0;
     virtual ~Sequence() {}
 
     class Iterator {
