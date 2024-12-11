@@ -261,6 +261,7 @@ void Interface() {
                     cout << "Write file: ";
                     string fname; cin >> fname;
                     handleFileCase<int>(fname, ascendingInt);
+                    break;
                 }
                 case 2: {
                     interface_for_extract();
