@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include "Sequence.h"
 
 using namespace std;
