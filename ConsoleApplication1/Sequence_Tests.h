@@ -2,43 +2,31 @@
 
 namespace TEST_DYNAMIC_ARRAY {
 
-	void ConstructorTests();
-	void CopyConstructorTests();
-
-	void GetElementsTests();
-
-	void GetSubsequencesTests();
-
-	void GetLengthTests();
-	void AppendTest();
-
-	void PrependTest();
-
-	void InsertAtTest();
-
-	void UnionTest();
-	void IteratorTest();
-	void call();
+    // Объявления функций тестирования DynamicArray
+    void TestConstructor();
+    void TestCopyConstructor();
+    void TestGetElements();
+    void TestGetSubsequences();
+    void TestGetLength();
+    void TestAppend();
+    void TestPrepend();
+    void TestInsertAt();
+    void TestUnion();
+    void TestIterator();
+    void RunAllTests();
 }
 
 namespace TEST_LINKED_LIST {
 
-	void ConstructorTests();
-
-	void GetElementsTests();
-
-	void GetSubsequencesTests();
-
-	void GetLengthTests();
-	void AppendTest();
-
-	void PrependTest();
-	void InsertAtTest();
-
-	void UnionTest();
-
-	void IteratorTest();
-
-	void call();
-
+    // Объявления функций тестирования LinkedList
+    void TestConstructor();
+    void TestGetElements();
+    void TestGetSubsequences();
+    void TestGetLength();
+    void TestAppend();
+    void TestPrepend();
+    void TestInsertAt();
+    void TestUnion();
+    void TestIterator();
+    void RunAllTests();
 }

@@ -1,50 +1,24 @@
-#include <fstream>
-#include <random>
-#include "LinkedList.h"
 #include "Work_With_Files.h"
+#include <random>
 
-void WriteRandomNumbersToFile(unsigned long long quantity, const std::string& outputFileName)
-{
+// Реализация функции записи случайных чисел в файл
+void WriteRandomNumbersToFile(unsigned long long quantity, const std::string& outputFileName) {
     std::ofstream fileStream(outputFileName);
-
     if (!fileStream.is_open()) {
-        std::cerr << "Unable to open file: " << outputFileName << std::endl;
+        std::cerr << "Невозможно открыть файл: " << outputFileName << std::endl;
         return;
     }
 
-    // Используем более современный генератор случайных чисел
+    // Используем современный генератор случайных чисел
     std::random_device rd; // Источник энтропии
     std::mt19937 gen(rd()); // Mersenne Twister с сидом от random_device
-    std::uniform_int_distribution<> dist(0, 10000); 
+    std::uniform_int_distribution<> dist(0, 10000); // Равномерное распределение от 0 до 10000
 
-    for (unsigned long long index = 0; index < quantity; ++index) {
+    for (unsigned long long i = 0; i < quantity; ++i) {
         unsigned long long randomValue = dist(gen); // Генерация случайного числа
-        fileStream << randomValue << "\n";
+        fileStream << randomValue << "\n"; // Запись числа в файл
     }
 
-    std::cout << "Generated " << quantity << " random numbers in file: " << outputFileName << std::endl;
-
+    std::cout << "Сгенерировано " << quantity << " случайных чисел в файл: " << outputFileName << std::endl;
     fileStream.close();
-}
-
-void WriteSequenceToFile(std::string& fileName, Sequence<int>* numbers)
-{
-    std::ofstream outFile(fileName);
-    if (!outFile) {
-        std::cerr << "Error opening the file!" << std::endl;
-        return;
-    }
-
-    auto begin = numbers->ToBegin();
-    auto end = numbers->ToEnd();
-
-    while (*begin != *end)
-    {
-        outFile << **begin << std::endl;
-        ++(*begin);
-    }
-
-    std::cout << "The numbers have been successfully written to the file " << fileName << std::endl;
-
-    outFile.close();
 }

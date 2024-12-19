@@ -1,14 +1,11 @@
 #pragma once
-
-#include "DynamicArray.h"
 #include <iostream>
-
+#include "DynamicArray.h"
 
 template <class T>
-void DynamicArray<T>::Print()  {
-    std::cout << "Elements in the array: ";
-    for (int i = 0; i < size; i++) { 
-        std::cout << data[i] << " "; 
+void DynamicArray<T>::Print() {
+    std::cout << "Array elements:" << std::endl;
+    for (int index = 0; index < size; ++index) {
+        std::cout << data[index] << std::endl;
     }
-    std::cout << std::endl;
 }

@@ -1,83 +1,72 @@
 #include "Tests.h"
 #include "Sorting.h"
 #include <iomanip>
+#include <iostream>
 
-// n c равномерным шагом по п€ти точкам и посторит по ним крафик, график об€зателен зависимость времени от клооичества данных должна проиллюстрированна графически можно даже в ексель
-// перед там как показывать надо показать как мы считали
-// изучить как сдклать так чтобы эксель пон€л что мы строкове ввели как число
-//timetest
-
-
-
-//обратно отсортированную помследовательность передать в быстрцю сортировку частично отсортировануу и просто отсортированную и по этим данным построить график
-// данные должны быть большими
-//ключ 
-
-
-
-
-
+// ‘ункци€ дл€ тестировани€ сортировок с разным количеством элементов
 void testSorts(int n) {
+    QuickSort<int> quickSorter;
+    BubbleSorter<int> bubbleSorter;
+    InsertionSort<int> insertionSort;
+    HeapSort<int> heapSorter; // ƒобавл€ем тестирование пирамидальной сортировки
 
-	QuickSort<int> quickSorter;
-	BubbleSorter<int> bubbleSorter;
-	InsertionSort<int> insertionSort;
-
-	cout << "Testing with " << n << " elements:" << endl
-		<< setw(20) << "Bubble Sort: " << loadTestSort(n, bubbleSorter, ascendingInt) << "s" << endl
-		<< setw(20) << "Quick Sort: " << loadTestSort(n, quickSorter, ascendingInt) << "s" << endl
-		<< setw(20) << "Insertion Sort: " << loadTestSort(n, insertionSort, ascendingInt) << "s" << endl;
+    std::cout << "Testing with " << n << " elements:" << std::endl
+        << std::setw(20) << "Bubble Sort: " << loadTestSort(n, bubbleSorter, ascendingInt) << "s" << std::endl
+        << std::setw(20) << "Quick Sort: " << loadTestSort(n, quickSorter, ascendingInt) << "s" << std::endl
+        << std::setw(20) << "Insertion Sort: " << loadTestSort(n, insertionSort, ascendingInt) << "s" << std::endl
+        << std::setw(20) << "Heap Sort: " << loadTestSort(n, heapSorter, ascendingInt) << "s" << std::endl;
 }
-	void comparing() {
 
-		int n = 1000;
-		int a = 2000;
-		int b = 3000;
-		int c = 4000;
-		int d = 5000;
-		testSorts(n);
-		testSorts(a);
-		testSorts(b);
-		testSorts(c);
-		testSorts(d);
-	
-	}
+// ‘ункци€ дл€ сравнени€ производительности сортировок
+void comparing() {
+    int n_values[] = { 1000, 2000, 3000, 4000, 5000 };
+    int num_tests = sizeof(n_values) / sizeof(n_values[0]);
 
-	//test sorts
-	// 
-	//проверить на отсортированном частично отсортированном и на обратно отсортированном
+    for (int i = 0; i < num_tests; ++i) {
+        testSorts(n_values[i]);
+    }
+}
 
+// ‘ункци€ дл€ проверки корректности сортировок
+void checking() {
+    QuickSort<int> quickSorter;
+    BubbleSorter<int> bubbleSorter;
+    InsertionSort<int> insertionSort;
+    HeapSort<int> heapSorter;
 
-	
-	void checking() {
+    // “есты дл€ BubbleSorter
+    Sorter_test1(bubbleSorter, ascendingInt);
+    Sorter_test2(bubbleSorter, ascendingInt);
+    Sorter_test3(bubbleSorter, ascendingInt);
+    Sorter_test4(bubbleSorter, ascendingInt);
+    Sorter_test5(bubbleSorter, ascendingInt);
+    Sorter_test6(bubbleSorter, ascendingInt);
+    Sorter_test7(bubbleSorter, ascendingInt);
 
-		QuickSort<int> quickSorter;
-		BubbleSorter<int> bubbleSorter;
-		InsertionSort<int> insertionSort;
+    // “есты дл€ InsertionSort
+    Sorter_test1(insertionSort, ascendingInt);
+    Sorter_test2(insertionSort, ascendingInt);
+    Sorter_test3(insertionSort, ascendingInt);
+    Sorter_test4(insertionSort, ascendingInt);
+    Sorter_test5(insertionSort, ascendingInt);
+    Sorter_test6(insertionSort, ascendingInt);
+    Sorter_test7(insertionSort, ascendingInt);
 
-		Sorter_test1(bubbleSorter, ascendingInt);
-		Sorter_test2(bubbleSorter, ascendingInt);
-		Sorter_test3(bubbleSorter, ascendingInt);
-		Sorter_test4(bubbleSorter, ascendingInt);
-		Sorter_test5(bubbleSorter, ascendingInt);
-		Sorter_test6(bubbleSorter, ascendingInt);
-		Sorter_test7(bubbleSorter, ascendingInt);
+    // “есты дл€ QuickSort
+    Sorter_test1(quickSorter, ascendingInt);
+    Sorter_test2(quickSorter, ascendingInt);
+    Sorter_test3(quickSorter, ascendingInt);
+    Sorter_test4(quickSorter, ascendingInt);
+    Sorter_test5(quickSorter, ascendingInt);
+    Sorter_test6(quickSorter, ascendingInt);
+    Sorter_test7(quickSorter, ascendingInt);
 
-		Sorter_test1(insertionSort, ascendingInt);
-		Sorter_test2(insertionSort, ascendingInt);
-		Sorter_test3(insertionSort, ascendingInt);
-		Sorter_test4(insertionSort, ascendingInt);
-		Sorter_test5(insertionSort, ascendingInt);
-		Sorter_test6(insertionSort, ascendingInt);
-		Sorter_test7(insertionSort, ascendingInt);
-
-		Sorter_test1(quickSorter, ascendingInt);
-		Sorter_test2(quickSorter, ascendingInt);
-		Sorter_test3(quickSorter, ascendingInt);
-		Sorter_test4(quickSorter, ascendingInt);
-		Sorter_test5(quickSorter, ascendingInt);
-		Sorter_test6(quickSorter, ascendingInt);
-		Sorter_test7(quickSorter, ascendingInt);
-		
-	}
-	
+    // “есты дл€ HeapSort
+    Sorter_test1(heapSorter, ascendingInt);
+    Sorter_test2(heapSorter, ascendingInt);
+    Sorter_test3(heapSorter, ascendingInt);
+    Sorter_test4(heapSorter, ascendingInt);
+    Sorter_test5(heapSorter, ascendingInt);
+    Sorter_test6(heapSorter, ascendingInt);
+    Sorter_test7(heapSorter, ascendingInt);
+}

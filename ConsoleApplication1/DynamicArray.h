@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include "Sequence.h"
 
 using namespace std;
@@ -12,10 +11,10 @@ private:
     T* data;
     int size;
 
+    // Метод для изменения размера массива
     void Resize(int newSize)
     {
         T* newData = new T[newSize];
-
         int minSize = (newSize < size) ? newSize : size;
 
         for (int i = 0; i < minSize; ++i)
@@ -29,17 +28,18 @@ private:
     }
 
 public:
+    // Внутренний класс итератора
     class DynamicArrayIterator : public Sequence<T>::Iterator {
     private:
         T* current;
 
     public:
-        DynamicArrayIterator(T* current) : current(current) { }
+        DynamicArrayIterator(T* ptr) : current(ptr) { }
 
         bool operator==(const typename Sequence<T>::Iterator& other) const override
         {
-            const DynamicArrayIterator* otherIterator = dynamic_cast<const DynamicArrayIterator*>(&other);
-            return otherIterator && current == otherIterator->current;
+            const DynamicArrayIterator* otherIt = dynamic_cast<const DynamicArrayIterator*>(&other);
+            return otherIt && (current == otherIt->current);
         }
 
         bool operator!=(const typename Sequence<T>::Iterator& other) const override
@@ -54,12 +54,12 @@ public:
 
         typename Sequence<T>::Iterator& operator++() override
         {
-            current++;
-
+            ++current;
             return *this;
         }
     };
 
+    // Методы итераторов
     typename Sequence<T>::Iterator* ToBegin() override
     {
         return new DynamicArrayIterator(data);
@@ -70,46 +70,48 @@ public:
         return new DynamicArrayIterator(data + size);
     }
 
-    DynamicArray() : size(0) {}
+    // Конструкторы
+    DynamicArray() : size(0), data(nullptr) {}
 
-    DynamicArray(T* items, int size)
+    DynamicArray(T* items, int sz)
     {
-        this->size = size;
+        size = sz;
         data = new T[size];
-
         for (int i = 0; i < size; ++i)
         {
             Set(i, items[i]);
         }
     }
 
-    DynamicArray(int size)
+    DynamicArray(int sz)
     {
-        this->size = size;
+        size = sz;
         data = new T[size];
     }
 
-    DynamicArray(DynamicArray<T>& dynamicArray)
+    DynamicArray(DynamicArray<T>& other)
     {
-        size = dynamicArray.size;
+        size = other.size;
         data = new T[size];
-
         for (int i = 0; i < size; ++i)
         {
-            Set(i, dynamicArray.data[i]);
+            Set(i, other.data[i]);
         }
     }
 
+    // Деструктор
     ~DynamicArray()
     {
         delete[] data;
     }
 
+    // Перегрузка оператора []
     T& operator[](int index)
     {
         return data[index];
     }
 
+    // Методы доступа
     T& GetFirstElement() override
     {
         return GetElement(0);
@@ -125,6 +127,12 @@ public:
         return data[index];
     }
 
+    void Set(int index, T value) override
+    {
+        data[index] = value;
+    }
+
+    // Метод обмена двух элементов
     void Swap(T& a, T& b) override
     {
         T temp = a;
@@ -132,11 +140,7 @@ public:
         b = temp;
     }
 
-    void Set(int index, T value) override
-    {
-        data[index] = value;
-    }
-
+    // Получение подмассивов
     DynamicArray<T>* GetSubsequence(int startIndex, int endIndex) override
     {
         int length;
@@ -156,8 +160,7 @@ public:
         }
 
         T* items = new T[length];
-
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < length; ++i)
         {
             items[i] = GetElement(startIndex + i);
         }
@@ -165,62 +168,50 @@ public:
         return new DynamicArray<T>(items, length);
     }
 
+    // Получение длины массива
     int GetLength() override
     {
         return size;
     }
 
-    void Append(T data) override
+    // Методы добавления элементов
+    void Append(T value) override
     {
-        InsertAt(data, size);
+        InsertAt(value, size);
     }
 
-    void Prepend(T data) override
+    void Prepend(T value) override
     {
-        InsertAt(data, 0);
+        InsertAt(value, 0);
     }
 
-    void InsertAt(T data, int index) override
+    void InsertAt(T value, int index) override
     {
         Resize(size + 1);
 
-        for (int i = size - 1; i > index; i--)
+        for (int i = size - 1; i > index; --i)
         {
             Set(i, GetElement(i - 1));
         }
 
-        Set(index, data);
+        Set(index, value);
     }
 
-    void Union(Sequence<T>* dynamicArray) override
+    // Объединение с другой последовательностью
+    void Union(Sequence<T>* otherSeq) override
     {
-        int oldSize = size;
-
-        for (int i = 0; i < dynamicArray->GetLength(); i++)
+        for (int i = 0; i < otherSeq->GetLength(); i++)
         {
-            Append(dynamicArray->GetElement(i));
+            Append(otherSeq->GetElement(i));
         }
     }
 
+    void Print() override;
 
-    void Print() override;/*
-     {
-        std::cout << "Elements in the array: ";
-        for (int i = 0; i < size; i++) { // size - текущий размер массива
-            std::cout << data[i] << " "; // data - указатель на массив элементов
-        }
-        std::cout << std::endl;
-    }*/
-    
-
-
+    // Метод очистки массива
     void Clear() {
-        delete[] data; // Освобождаем текущую память
-        data = nullptr; // Устанавливаем указатель на nullptr
-        size = 0;       // Сбрасываем размер на 0
+        delete[] data;
+        data = nullptr;
+        size = 0;
     }
-
-
 };
-
-

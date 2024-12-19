@@ -4,64 +4,61 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include "LinkedList.h"
 
+// Функция для записи случайных чисел в файл
 void WriteRandomNumbersToFile(unsigned long long quantity, const std::string& outputFileName);
 
-
-
+// Шаблонная функция для чтения чисел из файла в последовательность
 template <typename T>
-void ReadNumbersFromFile(const std::string& inputFileName, Sequence<T>& numbers) {
-    std::ifstream fileStream(inputFileName); // Создаем объект для чтения из файла
-
-    if (!fileStream.is_open()) { // Проверяем, открылся ли файл
-        std::cerr << "Error opening file: " << inputFileName << std::endl;
-        return; // Если файл не открылся, завершаем функцию
+bool ReadNumbersFromFile(const std::string& inputFileName, Sequence<T>& numbers) {
+    std::ifstream fileStream(inputFileName);
+    if (!fileStream.is_open()) {
+        std::cerr << "Ошибка открытия файла: " << inputFileName << std::endl;
+        return false;
     }
 
     std::string line;
-   
-    // Читаем строки из файла
-    while (std::getline(fileStream, line)) {
-       
+    bool success = false;
 
+    while (std::getline(fileStream, line)) {
         std::istringstream iss(line);
         T item;
-
-        // Попытка прочитать строку в нужный тип
         if (iss >> item) {
-            numbers.Append(item); // Добавляем элемент в последовательность
+            numbers.Append(item);
+            success = true;
         }
         else {
-            std::cerr << "Error: Could not convert line to target type: " << line << std::endl;
+            std::cerr << "Ошибка конвертации строки: " << line << std::endl;
         }
     }
 
-    fileStream.close(); // Закрываем файл
+    fileStream.close();
+    return success;
 }
 
-
-
-template <class T>
-void WriteSequenceToFile(std::string& fileName, Sequence<T>* numbers)
-{
-    std::ofstream outFile(fileName);
-    if (!outFile) {
-        std::cerr << "Error opening the file!" << std::endl;
+// Шаблонная функция для записи последовательности в файл
+template <typename T>
+void WriteSequenceToFile(const std::string& fileName, Sequence<T>* numbers) {
+    if (!numbers) {
+        std::cerr << "Ошибка: указатель на последовательность равен nullptr." << std::endl;
         return;
     }
 
-    auto begin = numbers->ToBegin();
-    auto end = numbers->ToEnd();
-
-    while (*begin != *end)
-    {
-        outFile << **begin << std::endl;
-        ++(*begin);
+    std::ofstream outFile(fileName);
+    if (!outFile) {
+        std::cerr << "Ошибка открытия файла: " << fileName << std::endl;
+        return;
     }
 
-    std::cout << "The numbers have been successfully written to the file " << fileName << std::endl;
+    auto beginIt = numbers->ToBegin();
+    auto endIt = numbers->ToEnd();
 
+    while (*beginIt != *endIt) {
+        outFile << **beginIt << std::endl;
+        ++(*beginIt);
+    }
+
+    std::cout << "Числа успешно записаны в файл " << fileName << std::endl;
     outFile.close();
 }
-
-

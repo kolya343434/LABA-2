@@ -1,16 +1,13 @@
 #pragma once
-
 #include <iostream>
-
 #include "LinkedList.h"
 
 template <class T>
 void LinkedList<T>::Print() {
     Node* current = head;
-    cout << "Elements in the list: ";
+    std::cout << "Elements in the list:" << std::endl;
     while (current) {
-        cout << current->data<< " "; 
+        std::cout << current->data << std::endl;
         current = current->next;
     }
-    cout << endl;
 }

@@ -12,7 +12,7 @@ private:
         T data;
         Node* next;
 
-        Node(T data, Node* next = nullptr) : data(data), next(next) {}
+        Node(T value, Node* nextNode = nullptr) : data(value), next(nextNode) {}
     };
 
     Node* head;
@@ -21,19 +21,18 @@ private:
 
 public:
 
+    // Внутренний класс итератора для LinkedList
     class LinkedListIterator : public Sequence<T>::Iterator {
     private:
-
         Node* current;
 
     public:
-
-        LinkedListIterator(Node* start) : current(start) { }
+        LinkedListIterator(Node* startNode) : current(startNode) { }
 
         bool operator==(const typename Sequence<T>::Iterator& other) const override
         {
-            const LinkedListIterator* otherIterator = dynamic_cast<const LinkedListIterator*>(&other);
-            return otherIterator && current == otherIterator->current;
+            const LinkedListIterator* otherIt = dynamic_cast<const LinkedListIterator*>(&other);
+            return otherIt && (current == otherIt->current);
         }
 
         bool operator!=(const typename Sequence<T>::Iterator& other) const override
@@ -52,11 +51,11 @@ public:
             {
                 current = current->next;
             }
-
             return *this;
         }
     };
 
+    // Методы для получения итераторов
     typename Sequence<T>::Iterator* ToBegin() override
     {
         return new LinkedListIterator(head);
@@ -67,48 +66,57 @@ public:
         return new LinkedListIterator(nullptr);
     }
 
+    // Конструкторы
     LinkedList() : head(nullptr), tail(nullptr), length(0) {}
 
-    LinkedList(T* items, int count) : head(nullptr), tail(nullptr), length(0)
+    LinkedList(T* elements, int count) : head(nullptr), tail(nullptr), length(0)
     {
         for (int i = 0; i < count; ++i)
         {
-            Append(items[i]);
+            Append(elements[i]);
         }
     }
 
-    LinkedList(LinkedList<T>& list) : head(nullptr), tail(nullptr), length(0)
+    LinkedList(LinkedList<T>& otherList) : head(nullptr), tail(nullptr), length(0)
     {
-        Node* current = list.head;
+        Node* currentNode = otherList.head;
 
-        while (current != nullptr)
+        while (currentNode != nullptr)
         {
-            Append(current->data);
-            current = current->next;
+            Append(currentNode->data);
+            currentNode = currentNode->next;
         }
     }
 
-    LinkedList(DynamicArray<T>& dynamicArray) : head(nullptr), tail(nullptr), length(0)
+    LinkedList(DynamicArray<T>& dynamicArr) : head(nullptr), tail(nullptr), length(0)
     {
-        for (int i = 1; i < dynamicArray.GetLength(); i++)
+        for (int i = 1; i < dynamicArr.GetLength(); i++)
         {
-            Append(dynamicArray.GetElement(i));
+            Append(dynamicArr.GetElement(i));
         }
     }
 
+    // Деструктор
     ~LinkedList()
     {
-        Node* current = head;
-        Node* next;
+        Node* currentNode = head;
+        Node* nextNode;
 
-        while (current != nullptr)
+        while (currentNode != nullptr)
         {
-            next = current->next;
-            delete current;
-            current = next;
+            nextNode = currentNode->next;
+            delete currentNode;
+            currentNode = nextNode;
         }
     }
 
+    // Перегрузка оператора []
+    T& operator[](int index)
+    {
+        return GetElement(index);
+    }
+
+    // Методы доступа к элементам
     T& GetFirstElement() override
     {
         return head->data;
@@ -119,24 +127,19 @@ public:
         return tail->data;
     }
 
-    T&  GetElement(int index)  override
+    T& GetElement(int index) override
     {
         return GetNode(index)->data;
-
     }
 
-    Node* GetNode(int index)
+    // Установка значения элемента по индексу
+    void Set(int index, T value) override
     {
-        Node* current = head;
-
-        for (int i = 0; i < index; i++)
-        {
-            current = current->next;
-        }
-
-        return current;
+        Node* targetNode = GetNode(index);
+        targetNode->data = value;
     }
 
+    // Обмен значениями двух элементов
     void Swap(T& a, T& b) override
     {
         T temp = a;
@@ -144,46 +147,50 @@ public:
         b = temp;
     }
 
-    void Set(int index, T value)
+    // Получение узла по индексу
+    Node* GetNode(int index)
     {
-        Node* current = head;
+        Node* currentNode = head;
 
         for (int i = 0; i < index; i++)
         {
-            current = current->next;
+            currentNode = currentNode->next;
         }
 
-        current->data = value;
+        return currentNode;
     }
 
-    LinkedList<T>* GetSubsequence(int startIndex, int endIndex) override
+    // Получение подсписка
+    LinkedList<T>* GetSubsequence(int startIdx, int endIdx) override
     {
-        if (endIndex >= length)
+        if (endIdx >= length)
         {
-            endIndex = length - 1;
+            endIdx = length - 1;
         }
 
-        LinkedList<T>* sublist = new LinkedList<T>();
-        Node* current = head;
+        LinkedList<T>* subList = new LinkedList<T>();
+        Node* currentNode = head;
 
-        for (int i = 0; i <= endIndex; i++)
+        for (int i = 0; i <= endIdx; i++)
         {
-            if (i >= startIndex)
+            if (i >= startIdx)
             {
-                sublist->Append(current->data);
+                subList->Append(currentNode->data);
             }
 
-            current = current->next;
+            currentNode = currentNode->next;
         }
 
-        return sublist;
+        return subList;
     }
 
+    // Получение длины списка
     int GetLength() override
     {
         return length;
     }
 
+    // Добавление элемента в конец списка
     void Append(T item) override
     {
         Node* newNode = new Node(item);
@@ -201,6 +208,7 @@ public:
         length++;
     }
 
+    // Добавление элемента в начало списка
     void Prepend(T item) override
     {
         Node* newNode = new Node(item, head);
@@ -217,6 +225,7 @@ public:
         length++;
     }
 
+    // Вставка элемента на указанную позицию
     void InsertAt(T item, int index) override
     {
         if (index == 0)
@@ -229,45 +238,33 @@ public:
         }
         else
         {
-            Node* current = head;
+            Node* prevNode = head;
 
             for (int i = 0; i < index - 1; ++i)
             {
-                current = current->next;
+                prevNode = prevNode->next;
             }
 
-            Node* newNode = new Node(item, current->next);
-            current->next = newNode;
+            Node* newNode = new Node(item, prevNode->next);
+            prevNode->next = newNode;
             length++;
         }
     }
 
-    void Union(Sequence<T>* list) override
+    // Объединение с другим списком
+    void Union(Sequence<T>* otherList) override
     {
-        int length = list->GetLength();
+        int listLength = otherList->GetLength();
 
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < listLength; i++)
         {
-            Append(list->GetElement(i));
+            Append(otherList->GetElement(i));
         }
     }
 
-
-  
-
+ 
     void Print() override;
-    /* {
 
-        {
-            Node* current = head;
-            cout << "Elements in the list: ";
-            while (current) {
-                cout << current->data << " "; // Теперь оператор << должен работать с типом T
-                current = current->next;
-            }
-            cout << endl;
-        }
-    }*/
 
     void Clear() {
         Node* current = head;
@@ -281,5 +278,3 @@ public:
     }
 
 };
-
-

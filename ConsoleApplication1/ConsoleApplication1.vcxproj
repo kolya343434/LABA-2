@@ -135,11 +135,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConsoleApplication1.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="DynamicArray_Print.h" />
     <ClCompile Include="Sequence_Tests.cpp" />
-    <ClCompile Include="sorting.h" />
+    <ClCompile Include="Sorting.h" />
     <ClCompile Include="Tests.cpp" />
     <ClCompile Include="Work_With_Files.cpp" />
   </ItemGroup>
@@ -150,6 +150,7 @@
     <ClInclude Include="ISorter.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="LinkedList_Print.h" />
+    <ClInclude Include="Person.h" />
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="Sequence_Tests.h" />
     <ClInclude Include="Tests.h" />
