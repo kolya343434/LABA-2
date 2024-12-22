@@ -3,15 +3,13 @@
 #include "ISorter.h"
 #include "Sequence.h"
 
-//
-// Сортировка вставками (Insertion Sort)
-//
+
 template <typename T>
 class InsertionSort : public ISorter<T> {
 public:
     void Sort(Sequence<T>& sequence, bool (*precedes)(const T& first, const T& second)) override {
         int length = sequence.GetLength();
-        if (length <= 1) return; // Если мало элементов, сортировать не нужно
+        if (length <= 1) return; 
 
         for (int i = 1; i < length; ++i) {
             T key = sequence.GetElement(i);
@@ -26,9 +24,7 @@ public:
     }
 };
 
-//
-// Сортировка пузырьком (Bubble Sort)
-//
+
 template <typename T>
 class BubbleSorter : public ISorter<T> {
 public:
@@ -41,22 +37,20 @@ public:
             for (int j = 0; j < length - i - 1; ++j) {
                 T first = sequence.GetElement(j);
                 T second = sequence.GetElement(j + 1);
-                // Если порядок неверный, меняем элементы местами
+               
                 if (!precedes(first, second)) {
                     sequence.Set(j, second);
                     sequence.Set(j + 1, first);
                     swapped = true;
                 }
             }
-            // Если за проход не было обменов, массив уже отсортирован
+            
             if (!swapped) return;
         }
     }
 };
 
-//
-// Быстрая сортировка (QuickSort) с использованием медианы трёх
-//
+
 template <typename T>
 class QuickSort : public ISorter<T> {
 public:
@@ -103,56 +97,6 @@ private:
     }
 };
 
-//
-// Пирамидальная сортировка (HeapSort)
-//
-template <typename T>
-class HeapSort : public ISorter<T> {
-public:
-    void Sort(Sequence<T>& sequence, bool (*precedes)(const T& first, const T& second)) override {
-        int length = sequence.GetLength();
-        if (length <= 1) return; // Если мало элементов, нет смысла сортировать
-
-        // Построение кучи (макс-кучи)
-        for (int i = length / 2 - 1; i >= 0; --i) {
-            Heapify(sequence, length, i, precedes);
-        }
-
-        // Извлечение элементов из кучи по одному
-        for (int i = length - 1; i > 0; --i) {
-            // Перемещаем текущий корень (максимальный элемент) в конец
-            sequence.Swap(sequence.GetElement(0), sequence.GetElement(i));
-
-            // Вызываем Heapify на уменьшенной куче
-            Heapify(sequence, i, 0, precedes);
-        }
-    }
-
-private:
-    void Heapify(Sequence<T>& sequence, int heapSize, int rootIndex, bool (*precedes)(const T& first, const T& second)) {
-        int largest = rootIndex;
-        int left = 2 * rootIndex + 1;
-        int right = 2 * rootIndex + 2;
-
-        // Проверяем левый дочерний узел
-        if (left < heapSize && precedes(sequence.GetElement(largest), sequence.GetElement(left))) {
-            largest = left;
-        }
-
-        // Проверяем правый дочерний узел
-        if (right < heapSize && precedes(sequence.GetElement(largest), sequence.GetElement(right))) {
-            largest = right;
-        }
-
-        // Если самый большой элемент не корень
-        if (largest != rootIndex) {
-            sequence.Swap(sequence.GetElement(rootIndex), sequence.GetElement(largest));
-
-            // Рекурсивно восстанавливаем кучу
-            Heapify(sequence, heapSize, largest, precedes);
-        }
-    }
-};
 
 inline bool ascendingInt(const int& first, const int& second) {
     return first < second;
@@ -161,3 +105,5 @@ inline bool ascendingInt(const int& first, const int& second) {
 inline bool descendingInt(const int& first, const int& second) {
     return first > second;
 }
+
+

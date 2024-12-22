@@ -1,16 +1,10 @@
 ﻿#include "Interface.h"
 #include "Work_With_Files.h"
-#include <limits>
-#include <sstream>
-#include <fstream>
-#include <chrono> 
 
-using namespace std;
 
-// Глобальный указатель на функцию сравнения для Person
 static bool (*g_personCmp)(const Person&, const Person&) = CompareByHeight;
 
-// Функция сравнения для Extract<Person>
+
 bool PersonExtractComparator(const Extract<Person>& a, const Extract<Person>& b) {
     return g_personCmp(a.value, b.value);
 }
@@ -23,7 +17,7 @@ int interfaceForExtract() {
     ifstream infile(filename);
 
     if (!infile.is_open()) {
-        cerr << "Не удалось открыть файл " << filename << " для чтения.\n";
+        cerr << "Failed to open file " << filename << " for reading.\n";
         return 1;
     }
 
@@ -36,12 +30,12 @@ int interfaceForExtract() {
 
     infile.close();
 
-    cout << "Сортировка чисел по значению...\n";
+    cout << "Sorting numbers by value...\n";
 
     QuickSort<Extract<int>> sorter;
     sorter.Sort(numbers, compareExtract<int>);
 
-    cout << "Количество чисел: " << numbers.GetLength() << "\n";
+    cout << "Number of elements: " << numbers.GetLength() << "\n";
 
     return 0;
 }
@@ -54,34 +48,32 @@ enum ContainerType {
 enum SortType {
     QUICK_SORT = 1,
     INSERTION_SORT = 2,
-    BUBBLE_SORT = 3,
-    HEAP_SORT = 4
+    BUBBLE_SORT = 3
+    
 };
 
-// Функция для выбора типа контейнера
+
 ContainerType chooseContainerType() {
-    cout << "Выберите тип контейнера:\n"
+    cout << "Choose container type:\n"
         << "1) LinkedList\n"
         << "2) DynamicArray\n"
-        << "Ваш выбор: ";
+        << "Your choice: ";
     int choice;
     cin >> choice;
 
     if (choice == 1) return LINKED_LIST;
     if (choice == 2) return DYNAMIC_ARRAY;
 
-    cout << "Некорректный выбор. Используется LinkedList по умолчанию.\n";
+    cout << "Invalid choice. Using LinkedList by default.\n";
     return LINKED_LIST;
 }
 
-// Функция для выбора типа сортировки
 SortType chooseSortType() {
-    cout << "Выберите тип сортировки:\n"
+    cout << "Choose sorting type:\n"
         << "1) QuickSort\n"
         << "2) InsertionSort\n"
         << "3) BubbleSort\n"
-        << "4) HeapSort\n"
-        << "Ваш выбор: ";
+        << "Your choice: ";
     int choice;
     cin >> choice;
 
@@ -89,14 +81,13 @@ SortType chooseSortType() {
     case 1: return QUICK_SORT;
     case 2: return INSERTION_SORT;
     case 3: return BUBBLE_SORT;
-    case 4: return HEAP_SORT;
     default:
-        cout << "Некорректный выбор. Используется QuickSort по умолчанию.\n";
+        cout << "Invalid choice. Using QuickSort by default.\n";
         return QUICK_SORT;
     }
 }
 
-// Шаблонная функция для сортировки контейнера
+
 template <typename T, typename Compare>
 void sortContainer(Sequence<T>& sequence, SortType sortType, Compare cmp) {
     switch (sortType) {
@@ -115,11 +106,6 @@ void sortContainer(Sequence<T>& sequence, SortType sortType, Compare cmp) {
         sorter.Sort(sequence, cmp);
         break;
     }
-    case HEAP_SORT: {
-        HeapSort<T> sorter;
-        sorter.Sort(sequence, cmp);
-        break;
-    }
     default: {
         QuickSort<T> sorter;
         sorter.Sort(sequence, cmp);
@@ -128,37 +114,37 @@ void sortContainer(Sequence<T>& sequence, SortType sortType, Compare cmp) {
     }
 }
 
-// Шаблонная функция для вывода и записи результатов
+
 template <typename T>
 void printAndWriteResult(Sequence<T>& container) {
-    cout << "Хотите ли вы вывести последовательность на экран? (Yes/No): ";
+    cout << "Do you want to print the sequence on the screen? (Yes/No): ";
     string answer;
     cin >> answer;
     if (answer == "Yes" || answer == "yes" || answer == "Y" || answer == "y") {
         container.Print();
     }
     else if (answer != "No" && answer != "no" && answer != "N" && answer != "n") {
-        cout << "Некорректный ввод.\n";
+        cout << "Invalid input.\n";
     }
 
-    cout << "Хотите ли вы записать данные в файл? (Yes/No): ";
+    cout << "Do you want to write the data to a file? (Yes/No): ";
     cin >> answer;
     if (answer == "Yes" || answer == "yes" || answer == "Y" || answer == "y") {
         string outputFileName;
-        cout << "Введите имя выходного файла: ";
+        cout << "Enter output file name: ";
         cin >> outputFileName;
         WriteSequenceToFile(outputFileName, &container);
     }
     else if (answer != "No" && answer != "no" && answer != "N" && answer != "n") {
-        cout << "Некорректный ввод.\n";
+        cout << "Invalid input.\n";
     }
 }
 
-// Шаблонная функция для обработки случая с чтением из файла
+
 template <typename T, typename Compare>
 void handleFileCase(Compare cmp) {
     while (true) {
-        cout << "Введите имя файла: ";
+        cout << "Enter file name: ";
         string fileName;
         cin >> fileName;
 
@@ -170,17 +156,16 @@ void handleFileCase(Compare cmp) {
             LinkedList<T> list;
             success = ReadNumbersFromFile(fileName, list);
             if (!success) {
-                cout << "Попробуйте снова.\n";
+                cout << "Try again.\n";
                 continue;
             }
 
-            // Засекаем время до сортировки
             auto start = std::chrono::high_resolution_clock::now();
             sortContainer<T>(list, sortType, cmp);
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> duration = end - start;
 
-            cout << "Сортировка заняла: " << duration.count() << " секунд(ы)" << endl;
+            cout << "Sorting took: " << duration.count() << " seconds\n";
 
             printAndWriteResult(list);
         }
@@ -188,31 +173,30 @@ void handleFileCase(Compare cmp) {
             DynamicArray<T> array;
             success = ReadNumbersFromFile(fileName, array);
             if (!success) {
-                cout << "Попробуйте снова.\n";
+                cout << "Try again.\n";
                 continue;
             }
 
-            // Засекаем время до сортировки
             auto start = std::chrono::high_resolution_clock::now();
             sortContainer<T>(array, sortType, cmp);
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> duration = end - start;
 
-            cout << "Сортировка заняла: " << duration.count() << " секунд(ы)" << endl;
+            cout << "Sorting took: " << duration.count() << " seconds\n";
 
             printAndWriteResult(array);
         }
-        break; // Успешное чтение, выходим из цикла
+        break; 
     }
 }
 
-// Шаблонная функция для обработки пользовательского ввода
+
 template <typename T, typename Compare>
 void handleUserInputCase(Compare cmp) {
     ContainerType containerType = chooseContainerType();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка буфера
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    cout << "Введите числа через пробел: ";
+    cout << "Enter numbers separated by spaces: ";
     string inputLine;
     getline(cin, inputLine);
     istringstream iss(inputLine);
@@ -226,13 +210,12 @@ void handleUserInputCase(Compare cmp) {
             list.Prepend(value);
         }
 
-        // Засекаем время до сортировки
         auto start = std::chrono::high_resolution_clock::now();
         sortContainer<T>(list, sortType, cmp);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> duration = end - start;
 
-        cout << "Сортировка заняла: " << duration.count() << " секунд(ы)" << endl;
+        cout << "Sorting took: " << duration.count() << " seconds\n";
 
         printAndWriteResult(list);
     }
@@ -242,101 +225,83 @@ void handleUserInputCase(Compare cmp) {
             array.Prepend(value);
         }
 
-        // Засекаем время до сортировки
         auto start = std::chrono::high_resolution_clock::now();
         sortContainer<T>(array, sortType, cmp);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> duration = end - start;
 
-        cout << "Сортировка заняла: " << duration.count() << " секунд(ы)" << endl;
+        cout << "Sorting took: " << duration.count() << " seconds\n";
 
         printAndWriteResult(array);
     }
 }
 
-// Основная функция интерфейса
+
 void Interface() {
-    checking(); // Проверка корректности структур данных и сортировок
+    checking(); 
 
     while (true) {
-        cout << "\nГлавное меню:\n"
-            << "1) Сортировка\n"
-            << "2) Сравнение\n"
-            << "0) Выход\n"
-            << "Ваш выбор: ";
+        cout << "\nMain Menu:\n"
+            << "1) Sorting\n"
+            << "2) Comparing\n"
+            << "0) Exit\n"
+            << "Your choice: ";
 
         int mainChoice;
         cin >> mainChoice;
 
         if (cin.fail()) {
-            cout << "Ошибка: пожалуйста, введите корректное число.\n";
+            cout << "Error: please enter a valid number.\n";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
 
         if (mainChoice == 0) {
-            cout << "Завершение программы.\n";
+            cout << "Exiting the program.\n";
             break;
         }
 
         switch (mainChoice) {
-        case 1: { // Сортировка
-            cout << "\nПодменю сортировки:\n"
-                << "1) Сортировка случайных чисел\n"
-                << "2) Чтение чисел из файла\n"
-                << "3) Чтение структур из файла\n"
-                << "4) Ввод последовательности с консоли\n"
-                << "5) Возврат в главное меню\n"
-                << "Ваш выбор: ";
+        case 1: { // Sorting
+            cout << "\nSorting submenu:\n"
+                << "1) Sorting random numbers\n"
+                << "2) Reading numbers from file\n"
+                << "3) Reading structures from file\n"
+                << "4) Entering sequence from console\n"
+                << "5) Return to main menu\n"
+                << "Your choice: ";
 
             int sortChoice;
             cin >> sortChoice;
 
             switch (sortChoice) {
-            case 1: { // Сортировка случайных чисел
-                cout << "Введите количество чисел: ";
+            case 1: { 
+                cout << "Enter the number of elements: ";
                 int count;
                 cin >> count;
-                cout << "Введите имя файла для записи: ";
+                cout << "Enter the output file name for random numbers: ";
                 string filename;
                 cin >> filename;
                 WriteRandomNumbersToFile(count, filename);
                 handleFileCase<int>(ascendingInt);
                 break;
             }
-            case 2: { // Чтение чисел из файла
-                cout << "\n1) Чтение чисел из файла\n"
-                    << "2) Большие данные случайных чисел\n"
-                    << "Ваш выбор: ";
-                int subChoice;
-                cin >> subChoice;
-
-                switch (subChoice) {
-                case 1: { // Чтение чисел из файла
-                    handleFileCase<int>(ascendingInt);
-                    break;
-                }
-                case 2: { // Большие данные случайных чисел
-                    interfaceForExtract();
-                    break;
-                }
-                default:
-                    cout << "Некорректный выбор. Попробуйте снова.\n";
-                    break;
-                }
+            case 2: { 
+                handleFileCase<int>(ascendingInt);
                 break;
+                
             }
-            case 3: { // Чтение структур из файла
-                // Выбор поля сортировки для Person
-                cout << "Выберите поле для сортировки Person:\n"
+            case 3: { 
+                
+                cout << "Choose a field to sort Person by:\n"
                     << "1) LastName\n"
                     << "2) FirstName\n"
                     << "3) Id\n"
                     << "4) BirthYear\n"
                     << "5) Height\n"
                     << "6) Weight\n"
-                    << "Ваш выбор: ";
+                    << "Your choice: ";
                 int personFieldChoice;
                 cin >> personFieldChoice;
 
@@ -350,7 +315,7 @@ void Interface() {
                 case 5: personCmp = CompareByHeight; break;
                 case 6: personCmp = CompareByWeight; break;
                 default:
-                    cout << "Некорректный выбор. Используется CompareByHeight.\n";
+                    cout << "Invalid choice. Using CompareByHeight by default.\n";
                     personCmp = CompareByHeight;
                     break;
                 }
@@ -360,15 +325,14 @@ void Interface() {
                     SortType sortType = chooseSortType();
 
                     while (true) {
-                        cout << "Введите имя файла со структурами Person: ";
-                        string fileName;
-                        cin >> fileName;
-
+                      
+                        string fileName = "people.txt";
+                     
                         bool success;
                         LinkedList<Person> tempPersons;
                         success = ReadNumbersFromFile<Person>(fileName, tempPersons);
                         if (!success) {
-                            cout << "Попробуйте снова.\n";
+                            cout << "Try again.\n";
                             continue;
                         }
 
@@ -379,13 +343,12 @@ void Interface() {
 
                         g_personCmp = personCmp;
 
-                        // Засекаем время до сортировки
                         auto start = std::chrono::high_resolution_clock::now();
                         sortContainer<Extract<Person>>(wrapperList, sortType, PersonExtractComparator);
                         auto end = std::chrono::high_resolution_clock::now();
                         std::chrono::duration<double> duration = end - start;
 
-                        cout << "Сортировка заняла: " << duration.count() << " секунд(ы)" << endl;
+                        cout << "Sorting took: " << duration.count() << " seconds\n";
 
                         printAndWriteResult(wrapperList);
 
@@ -394,26 +357,26 @@ void Interface() {
                 }
                 break;
             }
-            case 4: { // Ввод последовательности с консоли
+            case 4: { 
                 handleUserInputCase<int>(ascendingInt);
                 break;
             }
-            case 5: { // Возврат в главное меню
-                cout << "Возврат в главное меню.\n";
+            case 5: {
+                cout << "Returning to main menu.\n";
                 break;
             }
             default:
-                cout << "Некорректный выбор. Попробуйте снова.\n";
+                cout << "Invalid choice. Try again.\n";
                 break;
             }
             break;
         }
-        case 2: { // Сравнение
+        case 2: { 
             comparing();
             break;
         }
         default:
-            cout << "Некорректный выбор в главном меню. Попробуйте снова.\n";
+            cout << "Invalid choice in main menu. Try again.\n";
             break;
         }
     }

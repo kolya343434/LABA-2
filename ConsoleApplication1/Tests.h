@@ -159,6 +159,5 @@ void Sorter_test7(Sorter& sorter, bool (*precedes)(const int& first, const int& 
     }
 }
 
-// Объявления функций из tests.cpp
 void comparing();
 void checking();

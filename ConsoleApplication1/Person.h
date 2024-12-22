@@ -1,5 +1,5 @@
 #pragma once
-#pragma once
+
 
 #include <iostream>
 #include <string>
@@ -14,14 +14,14 @@ struct Person {
     double height;
     double weight;
 
-    // Конструктор по умолчанию
+    
     Person() : id(0), lastName(""), firstName(""), birthYear(0), height(0.0), weight(0.0) {}
 
-    // Пользовательский конструктор
+    
     Person(int id, const std::string& ln, const std::string& fn, int by, double h, double w)
         : id(id), lastName(ln), firstName(fn), birthYear(by), height(h), weight(w) {}
 
-    // Перегрузка оператора ввода
+    
     friend std::istream& operator>>(std::istream& is, Person& person) {
         std::string line;
         if (std::getline(is, line)) {
@@ -73,7 +73,7 @@ struct Person {
     }
 };
 
-// Функции сравнения для сортировок
+
 
 inline bool CompareByLastName(const Person& a, const Person& b) {
     return a.lastName < b.lastName;

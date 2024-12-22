@@ -6,10 +6,9 @@
 #include <string>
 #include "LinkedList.h"
 
-// Функция для записи случайных чисел в файл
 void WriteRandomNumbersToFile(unsigned long long quantity, const std::string& outputFileName);
 
-// Шаблонная функция для чтения чисел из файла в последовательность
+
 template <typename T>
 bool ReadNumbersFromFile(const std::string& inputFileName, Sequence<T>& numbers) {
     std::ifstream fileStream(inputFileName);
@@ -37,7 +36,6 @@ bool ReadNumbersFromFile(const std::string& inputFileName, Sequence<T>& numbers)
     return success;
 }
 
-// Шаблонная функция для записи последовательности в файл
 template <typename T>
 void WriteSequenceToFile(const std::string& fileName, Sequence<T>* numbers) {
     if (!numbers) {
