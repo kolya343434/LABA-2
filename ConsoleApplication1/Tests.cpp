@@ -48,7 +48,7 @@ void comparingQuickSort() {
     int num_tests = sizeof(n_values) / sizeof(n_values[0]);
 
     for (int i = 0; i < num_tests; ++i) {
-        cout << n_values[i] << endl;
+        
         testSortsQuickSort(n_values[i]);
     }
 }
