@@ -372,11 +372,35 @@ void Interface() {
             break;
         }
         case 2: { 
-            comparing();
-            break;
+            //comparing();
+            //comparingQuickSort();
+           // break;
+            int caser;
+
+           
+            cout << "Выберите опцию для сравнения сортировок:\n";
+            cout << "1) Сравнение всех сортировок\n";
+            cout << "2) Сравнение работы быстрой сортировки на разных последовательностях\n";
+           
+            cin >> caser;
+
+           
+            switch (caser) {
+            case 1:
+                cout << "\nСравнение всех сортировок:\n";
+                comparing();
+                break;
+            case 2:
+                cout << "\nСравнение работы быстрой сортировки на разных последовательностях:\n";
+                comparingQuickSort();
+                break;
+            default:
+                cout << "\nНеверный выбор. Пожалуйста, введите 1 или 2.\n";
+                break;
+            }
         }
         default:
-            cout << "Invalid choice in main menu. Try again.\n";
+           
             break;
         }
     }

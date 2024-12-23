@@ -16,7 +16,7 @@ using std::istringstream;
 
 template<typename T>
 double loadTestSortSorted(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
-    LinkedList<int> List;
+    DynamicArray<int> List;
     for (int i = 0; i < N; ++i) {
         List.Append(i);
     }
@@ -31,7 +31,7 @@ double loadTestSortSorted(int N, T& sorter, bool (*precedes)(const int& first, c
 
 template<typename T>
 double loadTestSortReverseSorted(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
-    LinkedList<int> List;
+    DynamicArray<int> List;
     for (int i = N - 1; i >= 0; --i) {
         List.Append(i);
     }
@@ -46,7 +46,7 @@ double loadTestSortReverseSorted(int N, T& sorter, bool (*precedes)(const int& f
 
 template<typename T>
 double loadTestSort(int N, T& sorter, bool (*precedes)(const int& first, const int& second)) {
-    LinkedList<int> List;
+    DynamicArray<int> List;
     srand(static_cast<unsigned int>(time(0)));
     for (int i = 0; i < N; ++i) {
         List.Append(rand());
@@ -161,3 +161,5 @@ void Sorter_test7(Sorter& sorter, bool (*precedes)(const int& first, const int& 
 
 void comparing();
 void checking();
+void comparingQuickSort();
+void testSortsQuickSort(int n);
